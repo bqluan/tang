@@ -1,0 +1,21 @@
+{
+  "name": "tang",
+  "version": "0.0.0",
+  "description": "Tang's company",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/jake features"
+  },
+  "repository": "",
+  "author": "Bing-Qian Luan <bingqian.luan@gmail.com>",
+  "license": "BSD",
+  "devDependencies": {
+    "cucumber": "~0.3.0",
+    "jake": "~0.5.8",
+    "request": "~2.12.0",
+    "should": "~1.2.1"
+  },
+  "dependencies": {
+    "express": "~3.0.6"
+  }
+}
