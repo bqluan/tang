@@ -31,14 +31,14 @@ var lstat = function(req, res, next) {
   });
 };
 
-var sendFile = function(req, res, next) {
+var downloadFile = function(req, res, next) {
   if (!req.stats.isFile()) {
     return next();
   }
   if (req.method === 'HEAD') {
     return res.send(200);
   }
-  res.sendfile(req.file, function(err) {
+  res.download(req.file, function(err) {
     if (err) next(err);
   });
 };
@@ -71,8 +71,8 @@ var error = function(err, req, res, next) {
 var app = module.exports = express();
 
 app.put('/*', parseFile, parseBody, write, error);
-app.get('/*', parseFile, lstat, readDir, sendFile, error);
-app.head('/*', parseFile, lstat, readDir, sendFile, error);
+app.get('/*', parseFile, lstat, readDir, downloadFile, error);
+app.head('/*', parseFile, lstat, readDir, downloadFile, error);
 
 if (!module.parent) {
   app.listen(1337);
