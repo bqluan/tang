@@ -4,14 +4,13 @@
   "description": "Tang's company",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/jake features"
+    "test": "./node_modules/.bin/cucumber.js --format pretty"
   },
   "repository": "",
   "author": "Bing-Qian Luan <bingqian.luan@gmail.com>",
   "license": "BSD",
   "devDependencies": {
     "cucumber": "~0.3.0",
-    "jake": "~0.5.8",
     "request": "~2.12.0",
     "should": "~1.2.1"
   },
