@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<style>
+.filebrowser {
+  border-radius: 5px;
+  font-family: arial,sans-serif;
+  font-size: small;
+  box-shadow: 0 5px 25px #3b3b3b;
+}
+.filebrowser-cwd {
+  background: -webkit-linear-gradient(#f2f2f2, #bebebe);
+  background: -ms-linear-gradient(#f2f2f2, #bebebe);
+  background: -o-linear-gradient(#f2f2f2, #bebebe);
+  background: -moz-linear-gradient(#f2f2f2, #bebebe);
+  background: linear-gradient(#f2f2f2, #bebebe);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: 1px solid #6a6a6a;
+  text-align: center;
+}
+.filebrowser-content {
+  padding: 5px;
+}
+.filebrowser-file {
+  display: inline-block;
+  padding: 5px;
+  text-align: center;
+  width: 120px;
+  height: 110px;
+  vertical-align: middle;
+  overflow: hidden;
+}
+.filebrowser-file-icon {
+  background-position: center;
+  background-size: 64px 64px;
+  background-repeat: no-repeat;
+  height: 70px;
+  width: 70px;
+  border-radius: 5px;
+  margin: 0 auto 1px auto;
+}
+.filebrowser-file-name {
+  padding: 0 5px;
+  border-radius: 16px;
+  display: inline-block;
+  max-width: 110px;
+  overflow: hidden;
+  line-height: 16px;
+  max-height: 32px;
+  word-wrap: break-word;
+}
+.filebrowser-file-selected .filebrowser-file-icon {
+  background-color: #cfcfcf;
+}
+.filebrowser-file-selected .filebrowser-file-name {
+  background-color: #6080f0;
+  color: white;
+}
+</style>
+</head>
+<body>
+<script src="index.js"></script>
+</body>
+</html>

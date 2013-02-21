@@ -2,6 +2,7 @@ var express = require('express');
 
 var app = module.exports = express();
 
+app.use('/browser', require('./browser'));
 app.use('/fs', require('./file_service'));
 
 if (!module.parent) {
