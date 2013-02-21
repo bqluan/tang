@@ -22,6 +22,12 @@ filebrowser.FileBrowser.prototype.getCwd = function() {
   return this.cwd_;
 };
 
+filebrowser.FileBrowser.prototype.setCwd = function(cwd) {
+  this.renderer_.setCwd(this, goog.string.path.basename(cwd));
+  this.cwd_ = cwd;
+  this.refresh();
+};
+
 filebrowser.FileBrowser.prototype.enterDocument = function() {
   goog.ui.Container.superClass_.enterDocument.call(this);
 
@@ -37,6 +43,8 @@ filebrowser.FileBrowser.prototype.enterDocument = function() {
     listen(this, goog.ui.Component.EventType.UNSELECT, this.handleUnSelectItem).
     listen(contentElement, goog.events.EventType.MOUSEDOWN,
       this.handleContentMouseDown).
+    listen(contentElement, goog.events.EventType.DBLCLICK,
+      this.handleContentDblClick).
     listen(contentElement, [
       goog.events.EventType.MOUSEDOWN,
       goog.events.EventType.DBLCLICK
@@ -69,6 +77,17 @@ filebrowser.FileBrowser.prototype.handleContentMouseDown = function(e) {
           || e.target === this.getOwnerControl(e.target).getElement())) {
     this.selectedItem_.setSelected(false);
     this.selectedItem_ = null;
+  }
+};
+
+filebrowser.FileBrowser.prototype.handleContentDblClick = function(e) {
+  this.handleContentMouseDown(e);
+  if (this.isEnabled() && e.target !== this.getContentElement()) {
+    var child = this.getOwnerControl(e.target);
+    var stats = child.getStats();
+    if (stats && stats.isDirectory()) {
+      this.setCwd(child.getFilename());
+    }
   }
 };
 

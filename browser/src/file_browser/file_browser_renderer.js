@@ -28,3 +28,12 @@ filebrowser.FileBrowserRenderer.prototype.createDom = function(control) {
 filebrowser.FileBrowserRenderer.prototype.getContentElement = function(element) {
   return element.firstChild.nextSibling;
 };
+
+filebrowser.FileBrowserRenderer.prototype.setCwd = function(control, cwd) {
+  control.getDomHelper().setTextContent(
+    this.getCwdElement(control.getElement()), cwd);
+};
+
+filebrowser.FileBrowserRenderer.prototype.getCwdElement = function(element) {
+  return element.firstChild;
+};

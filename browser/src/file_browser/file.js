@@ -23,6 +23,14 @@ filebrowser.File.prototype.setStats = function(stats) {
   this.stats_ = stats;
 };
 
+filebrowser.File.prototype.getStats = function() {
+  return this.stats_;
+};
+
+filebrowser.File.prototype.getFilename = function() {
+  return this.filename_;
+};
+
 filebrowser.File.prototype.enterDocument = function() {
   filebrowser.File.superClass_.enterDocument.call(this);
   var self = this;
