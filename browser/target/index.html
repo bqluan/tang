@@ -7,7 +7,12 @@
   border-radius: 5px;
   font-family: arial,sans-serif;
   font-size: small;
-  box-shadow: 0 5px 25px #3b3b3b;
+  box-shadow: 0 5px 20px #3b3b3b;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  bottom: 20px;
+  left: 20px;
 }
 .filebrowser-cwd {
   background: -webkit-linear-gradient(#f2f2f2, #bebebe);
@@ -19,6 +24,50 @@
   border-top-right-radius: 5px;
   border-bottom: 1px solid #6a6a6a;
   text-align: center;
+  height: 55px;
+}
+.filebrowser-back {
+  position: absolute;
+  height: 20px;
+  width: 25px;
+  top: 24px;
+  left: 8px;
+  border: 1px solid #7d7d7d;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  background-image: url("back.png"),-webkit-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("back.png"),-ms-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("back.png"),-o-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("back.png"),-moz-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("back.png"),linear-gradient(#f5f5f5, #bfbfbf);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.filebrowser-back-active {
+  background-image: url("back-active.png"),-webkit-linear-gradient(#676767, #9a9a9a);
+  background-image: url("back-active.png"),-ms-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("back-active.png"),-o-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("back-active.png"),-moz-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("back-active.png"),linear-gradient(#f5f5f5, #bfbfbf);
+}
+.filebrowser-forward {
+  position: absolute;
+  height: 20px;
+  width: 25px;
+  top: 24px;
+  left: 35px;
+  border-top: 1px solid #7d7d7d;
+  border-right: 1px solid #7d7d7d;
+  border-bottom: 1px solid #7d7d7d;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  background-image: url("forward.png"),-webkit-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("forward.png"),-ms-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("forward.png"),-o-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("forward.png"),-moz-linear-gradient(#f5f5f5, #bfbfbf);
+  background-image: url("forward.png"),linear-gradient(#f5f5f5, #bfbfbf);
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .filebrowser-content {
   padding: 5px;

@@ -1,9 +1,11 @@
 goog.provide('filebrowser.FileBrowser');
 
+goog.require('filebrowser.BackButtonRenderer');
 goog.require('filebrowser.File');
 goog.require('filebrowser.FileBrowserRenderer');
 goog.require('fs');
 goog.require('goog.string.path');
+goog.require('goog.ui.Button');
 goog.require('goog.ui.Container');
 
 /** @constructor */
@@ -31,14 +33,13 @@ filebrowser.FileBrowser.prototype.setCwd = function(cwd) {
 filebrowser.FileBrowser.prototype.enterDocument = function() {
   goog.ui.Container.superClass_.enterDocument.call(this);
 
-  this.forEachChild(function(child) {
-    if (child.isInDocument()) {
-      this.registerChildId_(child);
-    }
-  }, this);
+  var backButton = new goog.ui.Button(null, filebrowser.BackButtonRenderer.getInstance());
+  backButton.setSupportedState(goog.ui.Component.State.FOCUSED, false);
+  backButton.decorate(this.renderer_.getBackElement(this.element_));
 
   var contentElement = this.getContentElement();
   this.getHandler().
+    listen(backButton, goog.ui.Component.EventType.ACTION, this.handleBackAction).
     listen(this, goog.ui.Component.EventType.SELECT, this.handleSelectItem).
     listen(this, goog.ui.Component.EventType.UNSELECT, this.handleUnSelectItem).
     listen(contentElement, goog.events.EventType.MOUSEDOWN,
@@ -51,6 +52,10 @@ filebrowser.FileBrowser.prototype.enterDocument = function() {
     ], this.handleChildMouseEvents);
 
   this.refresh();
+};
+
+filebrowser.FileBrowser.prototype.handleBackAction = function(e) {
+  alert('back');
 };
 
 filebrowser.FileBrowser.prototype.handleSelectItem = function(e) {
