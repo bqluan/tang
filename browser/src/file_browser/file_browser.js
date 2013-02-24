@@ -3,6 +3,7 @@ goog.provide('filebrowser.FileBrowser');
 goog.require('filebrowser.BackButtonRenderer');
 goog.require('filebrowser.File');
 goog.require('filebrowser.FileBrowserRenderer');
+goog.require('filebrowser.ForwardButtonRenderer');
 goog.require('fs');
 goog.require('goog.string.path');
 goog.require('goog.ui.Button');
@@ -37,9 +38,14 @@ filebrowser.FileBrowser.prototype.enterDocument = function() {
   backButton.setSupportedState(goog.ui.Component.State.FOCUSED, false);
   backButton.decorate(this.renderer_.getBackElement(this.element_));
 
+  var forwardButton = new goog.ui.Button(null, filebrowser.ForwardButtonRenderer.getInstance());
+  forwardButton.setSupportedState(goog.ui.Component.State.FOCUSED, false);
+  forwardButton.decorate(this.renderer_.getForwardElement(this.element_));
+
   var contentElement = this.getContentElement();
   this.getHandler().
     listen(backButton, goog.ui.Component.EventType.ACTION, this.handleBackAction).
+    listen(forwardButton, goog.ui.Component.EventType.ACTION, this.handleForwardAction).
     listen(this, goog.ui.Component.EventType.SELECT, this.handleSelectItem).
     listen(this, goog.ui.Component.EventType.UNSELECT, this.handleUnSelectItem).
     listen(contentElement, goog.events.EventType.MOUSEDOWN,
@@ -56,6 +62,10 @@ filebrowser.FileBrowser.prototype.enterDocument = function() {
 
 filebrowser.FileBrowser.prototype.handleBackAction = function(e) {
   alert('back');
+};
+
+filebrowser.FileBrowser.prototype.handleForwardAction = function(e) {
+  alert('forward');
 };
 
 filebrowser.FileBrowser.prototype.handleSelectItem = function(e) {
