@@ -4,6 +4,7 @@ goog.require('filebrowser.BackButtonRenderer');
 goog.require('filebrowser.File');
 goog.require('filebrowser.FileBrowserRenderer');
 goog.require('filebrowser.ForwardButtonRenderer');
+goog.require('filebrowser.History');
 goog.require('fs');
 goog.require('goog.string.path');
 goog.require('goog.ui.Button');
@@ -17,6 +18,7 @@ filebrowser.FileBrowser = function(cwd, opt_renderer, opt_domHelper) {
     opt_renderer || filebrowser.FileBrowserRenderer.getInstance(),
     opt_domHelper);
   this.cwd_ = cwd;
+  this.history_ = new filebrowser.History(cwd);
   this.setFocusable(false);
 };
 goog.inherits(filebrowser.FileBrowser, goog.ui.Container);
@@ -26,7 +28,7 @@ filebrowser.FileBrowser.prototype.getCwd = function() {
 };
 
 filebrowser.FileBrowser.prototype.setCwd = function(cwd) {
-  this.renderer_.setCwd(this, goog.string.path.basename(cwd));
+  this.renderer_.setCwd(this, goog.string.path.basename(cwd) || '/');
   this.cwd_ = cwd;
   this.refresh();
 };
@@ -61,11 +63,17 @@ filebrowser.FileBrowser.prototype.enterDocument = function() {
 };
 
 filebrowser.FileBrowser.prototype.handleBackAction = function(e) {
-  alert('back');
+  if (this.history_.canMoveBack()) {
+    this.history_.moveBack();
+    this.setCwd(this.history_.getPath());
+  }
 };
 
 filebrowser.FileBrowser.prototype.handleForwardAction = function(e) {
-  alert('forward');
+  if (this.history_.canMoveForward()) {
+    this.history_.moveForward();
+    this.setCwd(this.history_.getPath());
+  }
 };
 
 filebrowser.FileBrowser.prototype.handleSelectItem = function(e) {
@@ -101,7 +109,9 @@ filebrowser.FileBrowser.prototype.handleContentDblClick = function(e) {
     var child = this.getOwnerControl(e.target);
     var stats = child.getStats();
     if (stats && stats.isDirectory()) {
-      this.setCwd(child.getFilename());
+      var dirname = child.getFilename();
+      this.setCwd(dirname);
+      this.history_.enter(dirname);
     }
   }
 };

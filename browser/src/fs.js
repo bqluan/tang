@@ -52,9 +52,7 @@ function getUri(path) {
   return '/fs' + path;
 }
 
-/**
- * @constructor
- */
+/** @constructor */
 function FSError(errno, code, message) {
   this.errno = errno;
   this.code = code;
@@ -63,7 +61,7 @@ function FSError(errno, code, message) {
 
 function reserror(res) {
   return new FSError(
-    parstInt(res.getResponseHeader('x-error-errno')) || res.getStatus(),
+    parseInt(res.getResponseHeader('x-error-errno')) || res.getStatus(),
     res.getResponseHeader('x-error-code') || res.getStatus(),
     res.getResponseText());
 }
