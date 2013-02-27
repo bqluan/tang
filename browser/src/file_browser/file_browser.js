@@ -5,10 +5,14 @@ goog.require('filebrowser.File');
 goog.require('filebrowser.FileBrowserRenderer');
 goog.require('filebrowser.ForwardButtonRenderer');
 goog.require('filebrowser.History');
+goog.require('filebrowser.Symbols_zh');
 goog.require('fs');
 goog.require('goog.string.path');
 goog.require('goog.ui.Button');
 goog.require('goog.ui.Container');
+goog.require('goog.ui.MenuItem');
+goog.require('goog.ui.MenuSeparator');
+goog.require('goog.ui.PopupMenu');
 
 /** @constructor */
 filebrowser.FileBrowser = function(cwd, opt_renderer, opt_domHelper) {
@@ -18,11 +22,8 @@ filebrowser.FileBrowser = function(cwd, opt_renderer, opt_domHelper) {
     opt_renderer || filebrowser.FileBrowserRenderer.getInstance(),
     opt_domHelper);
   this.cwd_ = cwd;
-  this.history_ = new filebrowser.History();
-  this.getHandler().listen(
-    this.history_, goog.events.EventType.CHANGE, this.handleHistoryChange);
-  this.history_.enter(cwd);
   this.setFocusable(false);
+  this.symbols_ = filebrowser.Symbols_zh;
 };
 goog.inherits(filebrowser.FileBrowser, goog.ui.Container);
 
@@ -39,28 +40,24 @@ filebrowser.FileBrowser.prototype.setCwd = function(cwd) {
 filebrowser.FileBrowser.prototype.enterDocument = function() {
   goog.ui.Container.superClass_.enterDocument.call(this);
 
-  var backButton = new goog.ui.Button(null, filebrowser.BackButtonRenderer.getInstance());
-  backButton.setSupportedState(goog.ui.Component.State.FOCUSED, false);
-  backButton.decorate(this.renderer_.getBackElement(this.element_));
-  backButton.setEnabled(false);
-  this.backButton_ = backButton;
+  this.backButton_ = this.createBackButton_();
+  this.forwardButton_ = this.createForwardButton_();
 
-  var forwardButton = new goog.ui.Button(null, filebrowser.ForwardButtonRenderer.getInstance());
-  forwardButton.setSupportedState(goog.ui.Component.State.FOCUSED, false);
-  forwardButton.decorate(this.renderer_.getForwardElement(this.element_));
-  forwardButton.setEnabled(false);
-  this.forwardButton_ = forwardButton;
+  this.history_ = this.createBrowsingHistory_();
+  this.history_.enter(this.cwd_);
+
+  this.menu_ = this.createMenu_();
 
   var contentElement = this.getContentElement();
   this.getHandler().
-    listen(backButton, goog.ui.Component.EventType.ACTION, this.handleBackAction).
-    listen(forwardButton, goog.ui.Component.EventType.ACTION, this.handleForwardAction).
     listen(this, goog.ui.Component.EventType.SELECT, this.handleSelectItem).
     listen(this, goog.ui.Component.EventType.UNSELECT, this.handleUnSelectItem).
     listen(contentElement, goog.events.EventType.MOUSEDOWN,
       this.handleContentMouseDown).
     listen(contentElement, goog.events.EventType.DBLCLICK,
       this.handleContentDblClick).
+    listen(contentElement, goog.events.EventType.CONTEXTMENU,
+      this.handleContentContextMenu).
     listen(contentElement, [
       goog.events.EventType.MOUSEDOWN,
       goog.events.EventType.DBLCLICK
@@ -69,9 +66,75 @@ filebrowser.FileBrowser.prototype.enterDocument = function() {
   this.refresh();
 };
 
+filebrowser.FileBrowser.prototype.createBackButton_ = function() {
+  var backButton = new goog.ui.Button(
+    null, filebrowser.BackButtonRenderer.getInstance());
+  backButton.setSupportedState(goog.ui.Component.State.FOCUSED, false);
+  backButton.decorate(this.renderer_.getBackElement(this.element_));
+  this.getHandler().listen(
+    backButton, goog.ui.Component.EventType.ACTION, this.handleBackAction);
+  return backButton;
+};
+
+filebrowser.FileBrowser.prototype.createForwardButton_ = function() {
+  var forwardButton = new goog.ui.Button(
+    null, filebrowser.ForwardButtonRenderer.getInstance());
+  forwardButton.setSupportedState(goog.ui.Component.State.FOCUSED, false);
+  forwardButton.decorate(this.renderer_.getForwardElement(this.element_));
+  this.getHandler().listen(
+    forwardButton, goog.ui.Component.EventType.ACTION, this.handleForwardAction);
+  return forwardButton;
+};
+
+filebrowser.FileBrowser.prototype.createBrowsingHistory_ = function() {
+  var history = new filebrowser.History();
+  this.getHandler().listen(
+    history, goog.events.EventType.CHANGE, this.handleHistoryChange);
+  return history;
+};
+
+filebrowser.FileBrowser.prototype.createMenu_ = function() {
+  var newFile = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FILE);
+  var newFolder = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FOLDER);
+  var uploadFile = new goog.ui.MenuItem(this.symbols_.UPLOAD_FILE);
+
+  var menu = new goog.ui.PopupMenu();
+  menu.addItem(newFile);
+  menu.addItem(newFolder);
+  menu.addItem(new goog.ui.MenuSeparator());
+  menu.addItem(uploadFile);
+  menu.render();
+
+  this.getHandler().
+    listen(newFile, goog.ui.Component.EventType.ACTION, this.handleNewFile).
+    listen(newFolder, goog.ui.Component.EventType.ACTION, this.handleNewFolder).
+    listen(uploadFile, goog.ui.Component.EventType.ACTION, this.handleUploadFile);
+
+  return menu;
+};
+
+filebrowser.FileBrowser.prototype.handleNewFile = function(e) {
+};
+
+filebrowser.FileBrowser.prototype.handleNewFolder = function(e) {
+};
+
+filebrowser.FileBrowser.prototype.handleUploadFile = function(e) {
+};
+
+filebrowser.FileBrowser.prototype.handleContentContextMenu = function(e) {
+  if (this.isEnabled()
+      && (e.target === this.getContentElement()
+          || e.target === this.getOwnerControl(e.target).getElement())) {
+    this.menu_.showAt(e.clientX, e.clientY);
+  }
+  e.preventDefault();
+  e.stopPropagation();
+};
+
 filebrowser.FileBrowser.prototype.handleHistoryChange = function(e) {
-  this.backButton_ && this.backButton_.setEnabled(e.target.canMoveBack());
-  this.forwardButton_ && this.forwardButton_.setEnabled(e.target.canMoveForward());
+  this.backButton_.setEnabled(e.target.canMoveBack());
+  this.forwardButton_.setEnabled(e.target.canMoveForward());
 };
 
 filebrowser.FileBrowser.prototype.handleBackAction = function(e) {
