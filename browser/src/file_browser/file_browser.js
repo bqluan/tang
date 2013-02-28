@@ -31,6 +31,10 @@ filebrowser.FileBrowser.prototype.getCwd = function() {
   return this.cwd_;
 };
 
+filebrowser.FileBrowser.prototype.getSymbols = function() {
+  return this.symbols_;
+};
+
 filebrowser.FileBrowser.prototype.setCwd = function(cwd) {
   this.renderer_.setCwd(this, goog.string.path.basename(cwd) || '/');
   this.cwd_ = cwd;
@@ -96,7 +100,9 @@ filebrowser.FileBrowser.prototype.createBrowsingHistory_ = function() {
 filebrowser.FileBrowser.prototype.createMenu_ = function() {
   var newFile = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FILE);
   var newFolder = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FOLDER);
-  var uploadFile = new goog.ui.MenuItem(this.symbols_.UPLOAD_FILE);
+  var form = this.renderer_.createUploadForm(this);
+  var input = this.renderer_.getFileElement(form);
+  var uploadFile = new goog.ui.MenuItem(form);
 
   var menu = new goog.ui.PopupMenu();
   menu.addItem(newFile);
@@ -108,7 +114,7 @@ filebrowser.FileBrowser.prototype.createMenu_ = function() {
   this.getHandler().
     listen(newFile, goog.ui.Component.EventType.ACTION, this.handleNewFile).
     listen(newFolder, goog.ui.Component.EventType.ACTION, this.handleNewFolder).
-    listen(uploadFile, goog.ui.Component.EventType.ACTION, this.handleUploadFile);
+    listen(input, goog.events.EventType.CHANGE, this.handleUploadFile);
 
   return menu;
 };
@@ -120,6 +126,7 @@ filebrowser.FileBrowser.prototype.handleNewFolder = function(e) {
 };
 
 filebrowser.FileBrowser.prototype.handleUploadFile = function(e) {
+  alert(e.target);
 };
 
 filebrowser.FileBrowser.prototype.handleContentContextMenu = function(e) {

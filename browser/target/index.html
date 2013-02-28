@@ -156,6 +156,8 @@
   margin: 0;
   padding: 4px 7em 4px 28px;
   white-space: nowrap;
+  position: relative;
+  overflow: hidden;
 }
 .goog-menuitem-highlight {
   background-color: #6080f0;
@@ -176,6 +178,13 @@
   border-top: 1px solid #ededed;
   margin: 4px 0;
   padding: 0;
+}
+.goog-menuitem input {
+  opacity: 0;
+  filter: alpha(opacity=0);
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 </style>
 </head>
