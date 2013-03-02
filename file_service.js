@@ -68,11 +68,17 @@ var error = function(err, req, res, next) {
      .end();
 };
 
+var saveFile = function(req, res, next) {
+  console.log(req.files);
+  res.send(200);
+};
+
 var app = module.exports = express();
 
 app.put('/*', parseFile, parseBody, write, error);
 app.get('/*', parseFile, lstat, readDir, downloadFile, error);
 app.head('/*', parseFile, lstat, readDir, downloadFile, error);
+app.post('/*', parseFile, express.multipart(), saveFile, error);
 
 if (!module.parent) {
   app.listen(1337);

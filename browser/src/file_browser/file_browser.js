@@ -101,7 +101,6 @@ filebrowser.FileBrowser.prototype.createMenu_ = function() {
   var newFile = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FILE);
   var newFolder = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FOLDER);
   var form = this.renderer_.createUploadForm(this);
-  var input = this.renderer_.getFileElement(form);
   var uploadFile = new goog.ui.MenuItem(form);
 
   var menu = new goog.ui.PopupMenu();
@@ -114,7 +113,7 @@ filebrowser.FileBrowser.prototype.createMenu_ = function() {
   this.getHandler().
     listen(newFile, goog.ui.Component.EventType.ACTION, this.handleNewFile).
     listen(newFolder, goog.ui.Component.EventType.ACTION, this.handleNewFolder).
-    listen(input, goog.events.EventType.CHANGE, this.handleUploadFile);
+    listen(form, goog.events.EventType.CHANGE, this.handleUploadFile);
 
   return menu;
 };
@@ -126,7 +125,10 @@ filebrowser.FileBrowser.prototype.handleNewFolder = function(e) {
 };
 
 filebrowser.FileBrowser.prototype.handleUploadFile = function(e) {
-  alert(e.target);
+  var io = new goog.net.IframeIo();
+  this.getHandler().listen(io, goog.net.EventType.COMPLETE,
+      function(e) { alert(e.target.getResponseText()); });
+  io.sendFromForm(e.target['form'], fs.mount + this.cwd_);
 };
 
 filebrowser.FileBrowser.prototype.handleContentContextMenu = function(e) {

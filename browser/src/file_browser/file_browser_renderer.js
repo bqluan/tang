@@ -54,9 +54,5 @@ filebrowser.FileBrowserRenderer.prototype.createUploadForm = function(control) {
     'form',
     {enctype: 'multipart/form-data', method: 'POST'},
     dom.createDom('span', undefined, control.getSymbols().UPLOAD_FILE),
-    dom.createDom('input', {type: 'file'}));
-};
-
-filebrowser.FileBrowserRenderer.prototype.getFileElement = function(form) {
-  return form.lastChild;
+    dom.createDom('input', {name: 'filename', type: 'file'}));
 };

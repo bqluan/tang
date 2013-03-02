@@ -3,9 +3,9 @@ goog.provide('fs');
 goog.require('goog.net.IframeIo');
 goog.require('goog.net.XhrIo');
 
-/**
- * @constructor
- */
+fs.mount = '/fs';
+
+/** @constructor */
 fs.Stats = function(res) {
   this.size = res.getResponseHeader('x-stats-size');
   this.mtime = res.getResponseHeader('x-stats-mtime');
@@ -49,7 +49,7 @@ fs.download = function(filename, callback) {
 };
 
 function getUri(path) {
-  return '/fs' + path;
+  return fs.mount + path;
 }
 
 /** @constructor */
