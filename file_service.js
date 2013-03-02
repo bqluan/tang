@@ -69,8 +69,14 @@ var error = function(err, req, res, next) {
 };
 
 var saveFile = function(req, res, next) {
-  console.log(req.files);
-  res.send(200);
+  var target = fs.createWriteStream(path.join(req.file, req.files.file.name));
+  target.on('close', function() {
+    res.send(201);
+  });
+  target.on('error', function(err) {
+    next(err);
+  });
+  fs.createReadStream(req.files.file.path).pipe(target);
 };
 
 var app = module.exports = express();

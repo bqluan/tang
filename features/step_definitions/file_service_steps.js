@@ -31,6 +31,14 @@ module.exports = function() {
     this.head(filename, done);
   });
 
+  this.When(/^I upload file (.*)$/, function(filename, done) {
+    this.upload(filename, done);
+  });
+
+  this.Then(/^I should have file (.*)$/, function(filename, done) {
+    this.shouldExists(filename, done);
+  });
+
   this.Then(/^I should see status code (\d+)$/, function(statusCode, done) {
     this.res.should.have.status(parseInt(statusCode));
     done();

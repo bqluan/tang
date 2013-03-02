@@ -45,6 +45,12 @@ World.prototype.writeFile = function(filename, data, done) {
   });
 };
 
+World.prototype.shouldExists = function(filename, done) {
+  fs.exists(path_.join(mount, filename), function(exists) {
+    exists ? done() : done.fail(new Error('file does not exist'));
+  });
+};
+
 World.prototype.rm = function(filename, done) {
   fs.unlink(path_.join(mount, filename), function(err) {
     err ? done.fail(err) : done();
@@ -56,4 +62,17 @@ World.prototype.rmF = function(filename, done) {
   fs.exists(path_.join(mount, filename), function(exists) {
     exists ? self.rm(filename, done) : done();
   });
+};
+
+World.prototype.upload = function(filename, done) {
+  var self = this;
+  request
+    .post(uriPrefix + path_.dirname(filename), function(err, res, body) {
+      self.err = err;
+      self.res = res;
+      self.body = body;
+      done();
+    })
+    .form()
+    .append('file', fs.createReadStream(path_.join(__dirname, filename)));
 };
