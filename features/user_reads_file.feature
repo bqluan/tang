@@ -13,7 +13,7 @@ Feature: user reads file
   Scenario: read non-existent file
     Given I don't have any file
     When I read file /file.txt
-    Then I should see status code 500
+    Then I should see status code 400
     And I should see errno 34
     And I should see error code ENOENT
 
@@ -27,6 +27,6 @@ Feature: user reads file
   Scenario: stat non-existent file
     Given I don't have any file
     When I stat file /file.txt
-    Then I should see status code 500
+    Then I should see status code 400
     And I should see errno 34
     And I should see error code ENOENT

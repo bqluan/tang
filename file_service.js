@@ -64,19 +64,34 @@ var write = function(req, res, next) {
 var error = function(err, req, res, next) {
   res.set('X-Error-Errno', err.errno)
      .set('X-Error-Code', err.code)
-     .status(500)
-     .end();
+     .status(400)
+     .end(err.message || '');
+};
+
+var new_error = function(errno, code, message) {
+  return {
+    errno: errno,
+    code: code,
+    message: message
+  };
+};
+
+var notExist = function(req, res, next) {
+  var filename = path.join(req.file, req.files.file.name);
+  fs.exists(filename, function(exists) {
+    exists ? next(new_error(47, 'EEXIST', 'file already exists')) : next();
+  });
 };
 
 var saveFile = function(req, res, next) {
-  var target = fs.createWriteStream(path.join(req.file, req.files.file.name));
-  target.on('close', function() {
-    res.send(201);
-  });
-  target.on('error', function(err) {
-    next(err);
-  });
-  fs.createReadStream(req.files.file.path).pipe(target);
+  fs.createReadStream(req.files.file.path).pipe(
+    fs.createWriteStream(path.join(req.file, req.files.file.name))
+      .on('close', function() {
+        res.send(201);
+      })
+      .on('error', function(err) {
+        next(err);
+      }));
 };
 
 var app = module.exports = express();
@@ -84,7 +99,7 @@ var app = module.exports = express();
 app.put('/*', parseFile, parseBody, write, error);
 app.get('/*', parseFile, lstat, readDir, downloadFile, error);
 app.head('/*', parseFile, lstat, readDir, downloadFile, error);
-app.post('/*', parseFile, express.multipart(), saveFile, error);
+app.post('/*', parseFile, express.multipart(), notExist, saveFile, error);
 
 if (!module.parent) {
   app.listen(1337);

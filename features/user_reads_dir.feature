@@ -23,6 +23,6 @@ Feature: user reads directory
   Scenario: read non-existent directory
     Given I don't have any file
     When I read directory /nosuch
-    Then I should see status code 500
+    Then I should see status code 400
     And I should see errno 34
     And I should see error code ENOENT

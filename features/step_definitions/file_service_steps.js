@@ -86,4 +86,9 @@ module.exports = function() {
     this.res.should.not.have.property('body');
     done();
   });
+
+  this.Then(/^I should see error message (.*)$/, function(message, done) {
+    this.res.body.should.equal(message);
+    done();
+  });
 };
