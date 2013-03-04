@@ -232,12 +232,9 @@ filebrowser.FileBrowser.prototype.refresh = function() {
   fs.readdir(this.cwd_, function(err, files) {
     if (!err) {
       files.forEach(function(file) {
-        var filename = goog.string.path.join(self.cwd_, file);
-        fs.lstat(filename, function(err, stats) {
-          if (!err) {
-            self.addChild(new filebrowser.File(filename, stats), true);
-          }
-        });
+        self.addChild(
+          new filebrowser.File(goog.string.path.join(self.cwd_, file)),
+          true);
       });
     }
   });

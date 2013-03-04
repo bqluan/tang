@@ -28,13 +28,14 @@ filebrowser.FileRenderer.prototype.getContentElement = function(element) {
   return element.firstChild.nextSibling;
 };
 
+filebrowser.FileRenderer.prototype.getIconElement = function(element) {
+  return element.firstChild;
+};
+
 filebrowser.FileRenderer.prototype.createIconElement_ = function(control) {
-  var icon = control.getDomHelper().createDom(
+  return control.getDomHelper().createDom(
     'div',
     goog.getCssName(filebrowser.FileRenderer.CSS_CLASS, 'icon'));
-  goog.style.setStyle(
-    icon, 'background-image', this.getIconUrl_(control.getStats()));
-  return icon;
 };
 
 filebrowser.FileRenderer.prototype.createNameElement_ = function(control) {
@@ -42,6 +43,13 @@ filebrowser.FileRenderer.prototype.createNameElement_ = function(control) {
     'div',
     goog.getCssName(filebrowser.FileRenderer.CSS_CLASS, 'name'),
     control.getContent());
+};
+
+filebrowser.FileRenderer.prototype.setStats = function(element, stats) {
+  goog.style.setStyle(
+    this.getIconElement(element),
+    'background-image',
+    this.getIconUrl_(stats));
 };
 
 filebrowser.FileRenderer.prototype.getIconUrl_ = function(stats) {
