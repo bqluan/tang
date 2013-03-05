@@ -126,9 +126,17 @@ filebrowser.FileBrowser.prototype.handleNewFolder = function(e) {
 
 filebrowser.FileBrowser.prototype.handleUploadFile = function(e) {
   var io = new goog.net.IframeIo();
-  this.getHandler().listen(io, goog.net.EventType.COMPLETE,
-      function(e) { alert(e.target.getResponseText()); });
+  this.getHandler().listen(
+    io, goog.net.EventType.COMPLETE, this.handleUploadComplete);
   io.sendFromForm(e.target['form'], fs.mount + this.cwd_);
+};
+
+filebrowser.FileBrowser.prototype.handleUploadComplete = function(e) {
+  /** @type {goog.net.IframeIo} */
+  var io = e.target;
+  if (io.isSuccess()) {
+    this.refresh();
+  }
 };
 
 filebrowser.FileBrowser.prototype.handleContentContextMenu = function(e) {
