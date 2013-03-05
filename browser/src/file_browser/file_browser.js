@@ -122,6 +122,10 @@ filebrowser.FileBrowser.prototype.handleNewFile = function(e) {
 };
 
 filebrowser.FileBrowser.prototype.handleNewFolder = function(e) {
+  var self = this;
+  fs.mkdir(goog.string.path.join(this.cwd_, 'dir1'), function(err) {
+    if (!err) self.refresh();
+  });
 };
 
 filebrowser.FileBrowser.prototype.handleUploadFile = function(e) {

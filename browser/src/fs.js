@@ -20,8 +20,22 @@ fs.Stats.prototype.isDirectory = function() {
   return (0xF000 & this.mode) === 0x4000;
 };
 
+fs.mkdir = function(path, callback) {
+  goog.net.XhrIo.send(
+    getUri(path),
+    function(e) {
+      /** @type {goog.net.XhrIo} */
+      var res = e.target;
+      res.isSuccess() ? callback() : callback(reserror(res));
+    },
+    'PUT',
+    '',
+    {'X-Directory': 'true'});
+};
+
 fs.readdir = function(path, callback) {
   goog.net.XhrIo.send(getUri(path), function(e) {
+    /** @type {goog.net.XhrIo} */
     var res = e.target;
     if (!res.isSuccess()) {
       return callback(reserror(res));
