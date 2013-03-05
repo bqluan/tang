@@ -35,6 +35,14 @@ module.exports = function() {
     this.upload(filename, done);
   });
 
+  this.When(/^I create directory (.*)$/, function(path, done) {
+    this.mkdir(path, done);
+  });
+
+  this.Then(/^I should have directory (.*)$/, function(path, done) {
+    this.shouldExists(path, done);
+  });
+
   this.Then(/^I should have file (.*)$/, function(filename, done) {
     this.shouldExists(filename, done);
   });

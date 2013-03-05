@@ -29,6 +29,20 @@ World.prototype.get = function(file, done) {
   });
 };
 
+World.prototype.mkdir = function(path, done) {
+  var self = this;
+  request.put({
+    uri: uriPrefix + path,
+    headers: {'X-Directory': true}
+  },
+  function(err, res, body) {
+    self.err = err;
+    self.res = res;
+    self.body = body;
+    done();
+  });
+};
+
 World.prototype.head = function(file, done) {
   var self = this;
   request.head(uriPrefix + file, function(err, res, body) {

@@ -55,6 +55,16 @@ var readDir = function(req, res, next) {
   });
 };
 
+var mkdir = function(req, res, next) {
+  req.get('X-Directory') ? mkdir_(req, res, next) : next();
+};
+
+var mkdir_ = function(req, res, next) {
+  fs.mkdir(req.file, function(err) {
+    err ? next(err) : res.send(201);
+  });
+};
+
 var write = function(req, res, next) {
   fs.writeFile(req.file, req.body, function(err) {
     err ? next(err) : res.send(201);
@@ -96,7 +106,7 @@ var saveFile = function(req, res, next) {
 
 var app = module.exports = express();
 
-app.put('/*', parseFile, parseBody, write, error);
+app.put('/*', parseFile, parseBody, mkdir, write, error);
 app.get('/*', parseFile, lstat, readDir, downloadFile, error);
 app.head('/*', parseFile, lstat, readDir, downloadFile, error);
 app.post('/*', parseFile, express.multipart(), notExist, saveFile, error);
