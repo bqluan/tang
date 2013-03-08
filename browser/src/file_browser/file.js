@@ -1,56 +1,49 @@
 goog.provide('filebrowser.File');
 
 goog.require('filebrowser.FileRenderer');
-goog.require('fs');
-goog.require('goog.string.path');
+goog.require('fs.Stats');
 goog.require('goog.ui.Control');
 
-/** @constructor */
-filebrowser.File = function(filename, opt_renderer, opt_domHelper) {
+/**
+ * @param {string} filename
+ * @param {fs.Stats} stats
+ * @param {filebrowser.FileRenderer=} opt_renderer
+ * @param {goog.dom.DomHelper=} opt_domHelper
+ * @constructor
+ */
+filebrowser.File = function(filename, stats, opt_renderer, opt_domHelper) {
   goog.ui.Control.call(
     this,
-    goog.string.path.basename(filename),
+    filename,
     opt_renderer || filebrowser.FileRenderer.getInstance(),
     opt_domHelper);
   this.filename_ = filename;
-  this.setSupportedState(goog.ui.Component.State.SELECTED, true);
-  this.setDispatchTransitionEvents(goog.ui.Component.State.SELECTED, true);
+  this.stats_ = stats;
 };
 goog.inherits(filebrowser.File, goog.ui.Control);
 
-filebrowser.File.prototype.setStats = function(stats) {
-  this.renderer_.setStats(this.element_, stats);
-  this.stats_ = stats;
-};
+/**
+ * @type {string}
+ * @private
+ */
+filebrowser.File.prototype.filename_;
 
-filebrowser.File.prototype.getStats = function() {
-  return this.stats_;
-};
+/**
+ * @type {fs.Stats}
+ * @private
+ */
+filebrowser.File.prototype.stats_;
 
+/**
+ * @return {string}
+ */
 filebrowser.File.prototype.getFilename = function() {
   return this.filename_;
 };
 
-filebrowser.File.prototype.enterDocument = function() {
-  filebrowser.File.superClass_.enterDocument.call(this);
-  var self = this;
-  fs.lstat(this.filename_, function(err, stats) {
-    if (!err) self.setStats(stats);
-  });
-};
-
-filebrowser.File.prototype.handleMouseDown = function(e) {
-  if (this.isEnabled()) {
-    this.setSelected(e.target !== this.element_);
-  }
-};
-
-filebrowser.File.prototype.handleDblClick = function(e) {
-  if (this.isEnabled()) {
-    this.setSelected(e.target !== this.element_);
-    if (this.stats_ && this.stats_.isFile()) {
-      fs.download(this.filename_, function(err) {
-      });
-    }
-  }
+/**
+ * @return {fs.Stats}
+ */
+filebrowser.File.prototype.getStats = function() {
+  return this.stats_;
 };

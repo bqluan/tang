@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unit Tests - filebrowser.FileList</title>
+<link rel="stylesheet" href="../../../node_modules/mocha/mocha.css" />
+<script src="../../../node_modules/mocha/mocha.js"></script>
+<script src="../../../node_modules/expect.js/expect.js"></script>
+<script src="../../deps/closure-library/closure/goog/base.js"></script>
+<script src="../deps.js"></script>
+<script>
+goog.require('filebrowser.FileList');
+</script>
+</head>
+<body>
+<div id="mocha"></div>
+<script>mocha.setup('bdd')</script>
+<script>
+describe('filebrowser.FileList', function() {
+  var list;
+
+  before(function() {
+    list = new filebrowser.FileList();
+  });
+
+  describe('constructor', function() {
+    it('should return a FileList', function() {
+      expect(list).to.be.a(filebrowser.FileList);
+    });
+  });
+
+  describe('getPath()', function() {
+    it('should return the current path', function() {
+      expect(list.getPath()).to.be('/');
+    });
+  });
+
+  describe('setPath()', function() {
+    it('should save the path specified', function() {
+      list.setPath('/');
+      expect(list.getPath()).to.be('/');
+    });
+  });
+});
+</script>
+<script>mocha.run()</script>
+</body>

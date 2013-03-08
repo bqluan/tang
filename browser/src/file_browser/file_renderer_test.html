@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unit Tests - filebrowser.FileRenderer</title>
+<link rel="stylesheet" href="../../../node_modules/mocha/mocha.css" />
+<script src="../../../node_modules/mocha/mocha.js"></script>
+<script src="../../../node_modules/expect.js/expect.js"></script>
+<script src="../../deps/closure-library/closure/goog/base.js"></script>
+<script src="../deps.js"></script>
+<script>
+goog.require('filebrowser.File');
+goog.require('filebrowser.FileRenderer');
+</script>
+</head>
+<body>
+<div id="mocha"></div>
+<script>mocha.setup('bdd')</script>
+<script>
+describe('filebrowser.FileRenderer', function() {
+  var renderer;
+  var statsFile = new fs.Stats(fs.Stats.Mode.REGULAR_FILE);
+  var statsDirectory = new fs.Stats(fs.Stats.Mode.DIRECTORY);
+  var file = new filebrowser.File('/file.txt', statsFile);
+  var directory = new filebrowser.File('/dir', statsDirectory);
+
+  before(function() {
+    renderer = filebrowser.FileRenderer.getInstance();
+  });
+
+  describe('getInstance()', function() {
+    it('should return a FileRenderer', function() {
+      expect(renderer).to.be.a(filebrowser.FileRenderer);
+    });
+
+    it('should return the same object each time', function() {
+      var another = filebrowser.FileRenderer.getInstance();
+      expect(another).to.be(renderer);
+    });
+  });
+
+  describe('getCssClass()', function() {
+    it('should return fb-file', function() {
+      expect(renderer.getCssClass()).to.be('fb-file');
+    });
+  });
+
+  describe('createDom()', function() {
+    var element;
+
+    beforeEach(function() {
+      element = renderer.createDom(file);
+    });
+
+    it('should return a DIV with class fb-file', function() {
+      expect(element.tagName).to.be('DIV');
+      expect(element.className).to.be('fb-file');
+    });
+
+    it('first child should be a DIV with class fb-file-icon', function() {
+      expect(element.firstChild.tagName).to.be('DIV');
+      expect(element.firstChild.className).to.be('fb-file-icon');
+    });
+
+    it('first child should have a file icon when stats is file', function() {
+      var iconUrl = element.firstChild.style.backgroundImage;
+      expect(iconUrl).to.contain('file_browser/mime/unknown.png');
+    });
+
+    it('first child should have a folder icon when stats is directory', function() {
+      element = renderer.createDom(directory);
+      var iconUrl = element.firstChild.style.backgroundImage;
+      expect(iconUrl).to.contain('file_browser/folder.png');
+    });
+
+    it('second child should be a DIV with class fb-file-name', function() {
+      expect(element.firstChild.nextSibling.tagName).to.be('DIV');
+      expect(element.firstChild.nextSibling.className).to.be('fb-file-name');
+    });
+
+    it('second child should contains filename', function() {
+      expect(element.firstChild.nextSibling.textContent).to.be('/file.txt');
+    });
+  });
+
+  describe('getIconElement()', function() {
+    it('should return the first child element', function() {
+      var element = renderer.createDom(file);
+      expect(renderer.getIconElement(element)).to.be(element.firstChild);
+    });
+  });
+
+  describe('getContentElement()', function() {
+    it('should return the second child element', function() {
+      var element = renderer.createDom(file);
+      expect(renderer.getContentElement(element)).to.be(element.firstChild.nextSibling);
+    });
+  });
+
+  describe('setStats()', function() {
+    var element;
+
+    beforeEach(function() {
+      element = renderer.createDom(file);
+    });
+
+    it('should set a file icon when stats is file', function() {
+      renderer.setStats(element, statsFile);
+      var iconUrl = renderer.getIconElement(element).style.backgroundImage;
+      expect(iconUrl).to.contain('file_browser/mime/unknown.png');
+    });
+
+    it('should set a folder icon when stats is directory', function() {
+      renderer.setStats(element, statsDirectory);
+      var iconUrl = renderer.getIconElement(element).style.backgroundImage;
+      expect(iconUrl).to.contain('file_browser/folder.png');
+    });
+  });
+});
+</script>
+<script>mocha.run()</script>
+</body>
+</html>

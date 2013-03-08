@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unit Tests - fs.Stats</title>
+<link rel="stylesheet" href="../../../node_modules/mocha/mocha.css" />
+<script src="../../../node_modules/mocha/mocha.js"></script>
+<script src="../../../node_modules/expect.js/expect.js"></script>
+<script src="../../deps/closure-library/closure/goog/base.js"></script>
+<script src="../deps.js"></script>
+<script>
+goog.require('fs.Stats');
+</script>
+</head>
+<body>
+<div id="mocha"></div>
+<script>mocha.setup('bdd')</script>
+<script>
+describe('fs.Stats', function() {
+  describe('default constructor', function() {
+    it('should return a Stats', function() {
+      expect(new fs.Stats()).to.be.a(fs.Stats);
+    });
+
+    it('should return a Stats with size 0', function() {
+      expect(new fs.Stats().getSize()).to.be(0);
+    });
+
+    it('should return a Stats with mode REGULAR_FILE', function() {
+      expect(new fs.Stats().getMode()).to.be(fs.Stats.Mode.REGULAR_FILE);
+    });
+  });
+
+  describe('getSize()', function() {
+    var mtime = new Date();
+    var stats;
+
+    before(function() {
+      stats = new fs.Stats(fs.Stats.Mode.DIRECTORY, 0, mtime);
+    });
+
+    it('should return file size', function() {
+      expect(stats.getSize()).to.be(0);
+    });
+  });
+
+  describe('getMode()', function() {
+    var mtime = new Date();
+    var stats;
+
+    before(function() {
+      stats = new fs.Stats(fs.Stats.Mode.DIRECTORY, 0, mtime);
+    });
+
+    it('should return file mode', function() {
+      expect(stats.getMode()).to.be(fs.Stats.Mode.DIRECTORY);
+    });
+  });
+
+  describe('getMTime()', function() {
+    var mtime = new Date();
+    var stats;
+
+    before(function() {
+      stats = new fs.Stats(fs.Stats.Mode.DIRECTORY, 0, mtime);
+    });
+
+    it('should return file mtime', function() {
+      expect(stats.getMTime()).to.be(mtime);
+    });
+  });
+
+  describe('isFile()', function() {
+    it('should return true when this is a file', function() {
+      expect(new fs.Stats().isFile()).to.be(true);
+    });
+
+    it('should return false when this is a directory', function() {
+      expect(new fs.Stats(fs.Stats.Mode.DIRECTORY).isFile()).to.be(false);
+    });
+  });
+
+  describe('isDirectory()', function() {
+    it('should return true when this is a directory', function() {
+      expect(new fs.Stats(fs.Stats.Mode.DIRECTORY).isDirectory()).to.be(true);
+    });
+
+    it('should return false when this is a file', function() {
+      expect(new fs.Stats().isDirectory()).to.be(false);
+    });
+  });
+});
+</script>
+<script>mocha.run()</script>
+</body>
+</html>

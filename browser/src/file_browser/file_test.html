@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unit Tests - filebrowser.File</title>
+<link rel="stylesheet" href="../../../node_modules/mocha/mocha.css" />
+<script src="../../../node_modules/mocha/mocha.js"></script>
+<script src="../../../node_modules/expect.js/expect.js"></script>
+<script src="../../deps/closure-library/closure/goog/base.js"></script>
+<script src="../deps.js"></script>
+<script>
+goog.require('filebrowser.File');
+</script>
+</head>
+<body>
+<div id="mocha"></div>
+<script>mocha.setup('bdd')</script>
+<script>
+describe('filebrowser.File', function() {
+  var file;
+  var stats = new fs.Stats();
+
+  before(function() {
+    file = new filebrowser.File('/file.txt', stats);
+  });
+
+  describe('constructor', function() {
+    it('should return a File', function() {
+      expect(file).to.be.a(filebrowser.File);
+    });
+  });
+
+  describe('getFilename()', function() {
+    it('should return current filename', function() {
+      expect(file.getFilename()).to.be('/file.txt');
+    });
+  });
+
+  describe('getStats()', function() {
+    it('should return current stats', function() {
+      expect(file.getStats()).to.be(stats);
+    });
+  });
+});
+</script>
+<script>mocha.run()</script>
+</body>

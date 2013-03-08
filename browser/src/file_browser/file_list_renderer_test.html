@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unit Tests - filebrowser.FileListRenderer</title>
+<link rel="stylesheet" href="../../../node_modules/mocha/mocha.css" />
+<script src="../../../node_modules/mocha/mocha.js"></script>
+<script src="../../../node_modules/expect.js/expect.js"></script>
+<script src="../../deps/closure-library/closure/goog/base.js"></script>
+<script src="../deps.js"></script>
+<script>
+goog.require('filebrowser.FileListRenderer');
+</script>
+</head>
+<body>
+<div id="mocha"></div>
+<script>mocha.setup('bdd')</script>
+<script>
+describe('filebrowser.FileListRenderer', function() {
+  var renderer;
+
+  before(function() {
+    renderer = filebrowser.FileListRenderer.getInstance();
+  });
+
+  describe('getInstance()', function() {
+    it('should return a FileListRenderer', function() {
+      expect(renderer).to.be.a(filebrowser.FileListRenderer);
+    });
+    it('should return the same object each time', function() {
+      var another= filebrowser.FileListRenderer.getInstance();
+      expect(another).to.be(renderer);
+    });
+  });
+
+  describe('getCssClass()', function() {
+    it('should return "fb-fl"', function() {
+      expect(renderer.getCssClass()).to.be('fb-fl');
+    });
+  });
+});
+</script>
+<script>mocha.run()</script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 require('child_process').spawn('python',
   [
-    './browser/deps/closure-library/closure/bin/build/closurebuilder.py',
+    'browser/deps/closure-library/closure/bin/build/closurebuilder.py',
     '--root=browser/deps/closure-library',
     '--root=browser/src',
     '--namespace=main',

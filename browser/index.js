@@ -3,4 +3,4 @@ var express = require('express'),
 
 var app = module.exports = express();
 
-app.use(express.static(path.join(__dirname, 'target')));
+app.use(express.static(path.join(__dirname)));
