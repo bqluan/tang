@@ -4,7 +4,10 @@ goog.require('goog.events.Event');
 goog.require('goog.events.EventTarget');
 goog.require('goog.events.EventType');
 
-/** @constructor */
+/**
+ * @constructor
+ * @extends {goog.events.EventTarget}
+ */
 filebrowser.History = function() {
   goog.events.EventTarget.call(this);
   this.backward_ = [];
@@ -12,12 +15,28 @@ filebrowser.History = function() {
 };
 goog.inherits(filebrowser.History, goog.events.EventTarget);
 
-filebrowser.History.prototype.enter = function(path) {
+/**
+ * @type {Array.<string>}
+ */
+filebrowser.History.prototype.backward_;
+
+/**
+ * @type {Array.<string>}
+ */
+filebrowser.History.prototype.forward_;
+
+/**
+ * @param {string} path
+ */
+filebrowser.History.prototype.push = function(path) {
   this.backward_.push(path);
   if (this.forward_.length > 0) this.forward_ = [];
   this.dispatchEvent(new goog.events.Event(goog.events.EventType.CHANGE));
 };
 
+/**
+ * @return {boolean}
+ */
 filebrowser.History.prototype.canMoveBack = function() {
   return this.backward_.length > 1;
 };
@@ -27,6 +46,9 @@ filebrowser.History.prototype.moveBack = function() {
   this.dispatchEvent(new goog.events.Event(goog.events.EventType.CHANGE));
 };
 
+/**
+ * @return {boolean}
+ */
 filebrowser.History.prototype.canMoveForward = function() {
   return this.forward_.length > 0;
 };
@@ -36,6 +58,9 @@ filebrowser.History.prototype.moveForward = function() {
   this.dispatchEvent(new goog.events.Event(goog.events.EventType.CHANGE));
 };
 
-filebrowser.History.prototype.getPath = function() {
+/**
+ * @return {string}
+ */
+filebrowser.History.prototype.peek = function() {
   return this.backward_[this.backward_.length - 1];
 };

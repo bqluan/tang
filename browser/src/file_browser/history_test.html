@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unit Tests - filebrowser.History</title>
+<link rel="stylesheet" href="../../../node_modules/mocha/mocha.css" />
+<script src="../../../node_modules/mocha/mocha.js"></script>
+<script src="../../../node_modules/expect.js/expect.js"></script>
+<script src="../../deps/closure-library/closure/goog/base.js"></script>
+<script src="../deps.js"></script>
+<script>
+goog.require('filebrowser.History');
+</script>
+</head>
+<body>
+<div id="mocha"></div>
+<script>mocha.setup('bdd')</script>
+<script>
+describe('filebrowser.History', function() {
+  var history;
+  var events;
+
+  var clearEvents = function() {
+    events = [];
+  };
+
+  beforeEach(function() {
+    history = new filebrowser.History();
+    goog.events.listen(history, goog.events.EventType.CHANGE, function(e) {
+      events.push(e.type);
+    });
+    events = [];
+  });
+
+  afterEach(function() {
+    history.dispose();
+  });
+
+  describe('push()', function() {
+    it('should save the given path', function() {
+      history.push('/abc');
+      expect(history.peek()).to.be('/abc');
+    });
+
+    it('should clear the forward history', function() {
+      history.push('/abc');
+      expect(history.canMoveForward()).to.be(false);
+    });
+
+    it('should dispatch CHANGE event', function() {
+      history.push('/abc');
+      expect(events).to.have.length(1);
+      expect(events[0]).to.be(goog.events.EventType.CHANGE);
+    });
+  });
+
+  describe('peek()', function() {
+    it('should return the path that just pushed', function() {
+      history.push('/');
+      expect(history.peek()).to.be('/');
+    });
+  });
+
+  describe('canMoveBack()', function() {
+    it('should return false when push() is not called', function() {
+      expect(history.canMoveBack()).to.be(false);
+    });
+
+    it('should return false when push() is called once', function() {
+      history.push('/');
+      expect(history.canMoveBack()).to.be(false);
+    });
+
+    it('should return true after push() is called twice', function() {
+      history.push('/');
+      history.push('/abc');
+      expect(history.canMoveBack()).to.be(true);
+    });
+  });
+
+  describe('moveBack()', function() {
+    it('should move one path back', function() {
+      history.push('/');
+      history.push('/abc');
+      history.moveBack();
+      expect(history.peek()).to.be('/');
+    });
+
+    it('should save the current path before moving', function() {
+      history.push('/');
+      history.push('/abc');
+      history.moveBack();
+      expect(history.canMoveForward()).to.be(true);
+    });
+
+    it('should dispatch CHANGE event', function() {
+      history.push('/');
+      history.push('/abc');
+      clearEvents();
+      history.moveBack();
+      expect(events).to.have.length(1);
+      expect(events[0]).to.be(goog.events.EventType.CHANGE);
+    });
+  });
+
+  describe('canMoveForward()', function() {
+    it('should return false when moveBack() is not called', function() {
+      expect(history.canMoveForward()).to.be(false);
+    });
+
+    it('should return false after push() is called', function() {
+      history.push('/');
+      expect(history.canMoveForward()).to.be(false);
+    });
+
+    it('should return true after moveBack() is called', function() {
+      history.push('/');
+      history.push('/abc');
+      history.moveBack();
+      expect(history.canMoveForward()).to.be(true);
+    });
+  });
+
+  describe('moveForward()', function() {
+    it('should move one path forward', function() {
+      history.push('/');
+      history.push('/abc');
+      history.moveBack();
+      history.moveForward();
+      expect(history.peek()).to.be('/abc');
+    });
+
+    it('should dispatch CHANGE event', function() {
+      history.push('/');
+      history.push('/abc');
+      history.moveBack();
+      clearEvents();
+      history.moveForward();
+      expect(events).to.have.length(1);
+      expect(events[0]).to.be(goog.events.EventType.CHANGE);
+    });
+  });
+});
+</script>
+<script>mocha.run()</script>
+</body>
+</html>

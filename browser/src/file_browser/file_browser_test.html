@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unit Tests - filebrowser.FileBrowser</title>
+<link rel="stylesheet" href="../../../node_modules/mocha/mocha.css" />
+<script src="../../../node_modules/mocha/mocha.js"></script>
+<script src="../../../node_modules/expect.js/expect.js"></script>
+<script src="../../deps/closure-library/closure/goog/base.js"></script>
+<script src="../deps.js"></script>
+<script>
+goog.require('filebrowser.FileBrowser');
+</script>
+</head>
+<body>
+<div id="mocha"></div>
+<div id="sandbox" style="height:0;overflow:hidden;"></div>
+<script>mocha.setup('bdd')</script>
+<script>
+describe('filebrowser.FileBrowser', function() {
+  var fb;
+
+  beforeEach(function() {
+    fb = new filebrowser.FileBrowser('/');
+    fb.render(goog.dom.getElement('sandbox'));
+  });
+
+  afterEach(function() {
+    fb.dispose();
+  });
+
+  describe('constructor', function() {
+    it('should return a FileBrowser', function() {
+      expect(fb).to.be.a(filebrowser.FileBrowser);
+    });
+  });
+
+  describe('getCwd()', function() {
+    it('should return current working directory', function() {
+      expect(fb.getCwd()).to.be('/');
+    });
+  });
+});
+</script>
+<script>mocha.run()</script>
+</body>

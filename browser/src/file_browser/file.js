@@ -3,6 +3,7 @@ goog.provide('filebrowser.File');
 goog.require('filebrowser.FileRenderer');
 goog.require('fs.Stats');
 goog.require('goog.ui.Control');
+goog.require('path');
 
 /**
  * @param {string} filename
@@ -14,11 +15,13 @@ goog.require('goog.ui.Control');
 filebrowser.File = function(filename, stats, opt_renderer, opt_domHelper) {
   goog.ui.Control.call(
     this,
-    filename,
+    path.basename(filename),
     opt_renderer || filebrowser.FileRenderer.getInstance(),
     opt_domHelper);
   this.filename_ = filename;
   this.stats_ = stats;
+  this.setSupportedState(goog.ui.Component.State.SELECTED, true);
+  this.setDispatchTransitionEvents(goog.ui.Component.State.SELECTED, true);
 };
 goog.inherits(filebrowser.File, goog.ui.Control);
 
@@ -46,4 +49,42 @@ filebrowser.File.prototype.getFilename = function() {
  */
 filebrowser.File.prototype.getStats = function() {
   return this.stats_;
+};
+
+/**
+ * @return {boolean}
+ */
+filebrowser.File.prototype.shouldHandleMouseEvent = function(element) {
+  return element !== this.element_;
+};
+
+/**
+ * @param {goog.events.Event}
+ */
+filebrowser.File.prototype.handleMouseDown = function(e) {
+  if (this.isEnabled() && this.shouldHandleMouseEvent(e.target)) {
+    this.setSelected(true);
+  }
+  // Cancel the default action unless the control allows text selection.
+  if (!this.isAllowTextSelection() && e.isMouseActionButton()) {
+    e.preventDefault();
+  }
+};
+
+/**
+ * @param {goog.events.Event}
+ */
+filebrowser.File.prototype.handleMouseUp = function(e) {
+};
+
+/**
+ * @param {goog.events.Event}
+ */
+filebrowser.File.prototype.handleMouseOver = function(e) {
+};
+
+/**
+ * @param {goog.events.Event}
+ */
+filebrowser.File.prototype.handleMouseOut = function(e) {
 };

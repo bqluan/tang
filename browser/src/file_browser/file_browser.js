@@ -3,74 +3,101 @@ goog.provide('filebrowser.FileBrowser');
 goog.require('filebrowser.BackButtonRenderer');
 goog.require('filebrowser.File');
 goog.require('filebrowser.FileBrowserRenderer');
+goog.require('filebrowser.FileList');
 goog.require('filebrowser.ForwardButtonRenderer');
-goog.require('filebrowser.History');
-goog.require('filebrowser.Symbols_zh');
 goog.require('fs');
-goog.require('goog.string.path');
 goog.require('goog.ui.Button');
-goog.require('goog.ui.Container');
-goog.require('goog.ui.MenuItem');
-goog.require('goog.ui.MenuSeparator');
-goog.require('goog.ui.PopupMenu');
+goog.require('goog.ui.Component');
+goog.require('path');
 
-/** @constructor */
+/**
+ * @param {string} cwd
+ * @param {filebrowser.FileBrowserRenderer=} opt_renderer
+ * @param {goog.dom.DomHelper=} opt_domHelper
+ * @constructor
+ * @extends {goog.ui.Component}
+ */
 filebrowser.FileBrowser = function(cwd, opt_renderer, opt_domHelper) {
-  goog.ui.Container.call(
-    this,
-    goog.ui.Container.Orientation.VERTICAL,
-    opt_renderer || filebrowser.FileBrowserRenderer.getInstance(),
-    opt_domHelper);
+  goog.ui.Component.call(this, opt_domHelper);
   this.cwd_ = cwd;
-  this.setFocusable(false);
-  this.symbols_ = filebrowser.Symbols_zh;
+  this.renderer_ =
+    opt_renderer || filebrowser.FileBrowserRenderer.getInstance();
 };
-goog.inherits(filebrowser.FileBrowser, goog.ui.Container);
+goog.inherits(filebrowser.FileBrowser, goog.ui.Component);
 
+/**
+ * @type {goog.ui.Button}
+ */
+filebrowser.FileBrowser.prototype.backButton_;
+
+/**
+ * @type {goog.ui.Button}
+ */
+filebrowser.FileBrowser.prototype.forwardButton_;
+
+/**
+ * @type {filebrowser.FileList}
+ */
+filebrowser.FileBrowser.prototype.fileList_;
+
+/**
+ * @return {string}
+ */
 filebrowser.FileBrowser.prototype.getCwd = function() {
   return this.cwd_;
 };
 
-filebrowser.FileBrowser.prototype.getSymbols = function() {
-  return this.symbols_;
+/** @override */
+filebrowser.FileBrowser.prototype.createDom = function() {
+  this.element_ = this.renderer_.createDom(this);
 };
 
-filebrowser.FileBrowser.prototype.setCwd = function(cwd) {
-  this.renderer_.setCwd(this, goog.string.path.basename(cwd) || '/');
-  this.cwd_ = cwd;
-  this.refresh();
-};
-
+/** @override */
 filebrowser.FileBrowser.prototype.enterDocument = function() {
-  goog.ui.Container.superClass_.enterDocument.call(this);
-
-  this.backButton_ = this.createBackButton_();
-  this.forwardButton_ = this.createForwardButton_();
-
-  this.history_ = this.createBrowsingHistory_();
-  this.history_.enter(this.cwd_);
-
-  this.menu_ = this.createMenu_();
-
-  var contentElement = this.getContentElement();
-  this.getHandler().
-    listen(this, goog.ui.Component.EventType.SELECT, this.handleSelectItem).
-    listen(this, goog.ui.Component.EventType.UNSELECT, this.handleUnSelectItem).
-    listen(contentElement, goog.events.EventType.MOUSEDOWN,
-      this.handleContentMouseDown).
-    listen(contentElement, goog.events.EventType.DBLCLICK,
-      this.handleContentDblClick).
-    listen(contentElement, goog.events.EventType.CONTEXTMENU,
-      this.handleContentContextMenu).
-    listen(contentElement, [
-      goog.events.EventType.MOUSEDOWN,
-      goog.events.EventType.DBLCLICK
-    ], this.handleChildMouseEvents);
-
+  filebrowser.FileBrowser.superClass_.enterDocument.call(this);
+  this.backButton_ = this.decorateBackElement_();
+  this.forwardButton_ = this.decorateForwardElement_();
+  this.fileList_ = this.decorateContentElement_();
   this.refresh();
 };
 
-filebrowser.FileBrowser.prototype.createBackButton_ = function() {
+filebrowser.FileBrowser.prototype.refresh = function() {
+  this.fileList_.removeChildren(true);
+  var self = this;
+  /**
+   * @param {fs.FSError} err
+   * @param {Array.<string>} files
+   */
+  var onreaddir = function(err, files) {
+    if (!err) {
+      files.forEach(
+        /**
+         * @param {string} file
+         */
+        function(file) {
+          var absolute = path.join(self.cwd_, file);
+          fs.lstat(
+            absolute,
+            /**
+             * @param {fs.FSError} err
+             * @param {fs.Stats} stats
+             */
+            function(err, stats) {
+              if (!err) {
+                self.fileList_.addChild(
+                  new filebrowser.File(absolute, stats), true);
+              }
+            });
+        });
+    }
+  };
+  fs.readdir(this.cwd_, onreaddir);
+};
+
+/**
+ * @return {goog.ui.Button}
+ */
+filebrowser.FileBrowser.prototype.decorateBackElement_ = function() {
   var backButton = new goog.ui.Button(
     null, filebrowser.BackButtonRenderer.getInstance());
   backButton.setSupportedState(goog.ui.Component.State.FOCUSED, false);
@@ -80,7 +107,10 @@ filebrowser.FileBrowser.prototype.createBackButton_ = function() {
   return backButton;
 };
 
-filebrowser.FileBrowser.prototype.createForwardButton_ = function() {
+/**
+ * @return {goog.ui.Button}
+ */
+filebrowser.FileBrowser.prototype.decorateForwardElement_ = function() {
   var forwardButton = new goog.ui.Button(
     null, filebrowser.ForwardButtonRenderer.getInstance());
   forwardButton.setSupportedState(goog.ui.Component.State.FOCUSED, false);
@@ -90,164 +120,25 @@ filebrowser.FileBrowser.prototype.createForwardButton_ = function() {
   return forwardButton;
 };
 
-filebrowser.FileBrowser.prototype.createBrowsingHistory_ = function() {
-  var history = new filebrowser.History();
-  this.getHandler().listen(
-    history, goog.events.EventType.CHANGE, this.handleHistoryChange);
-  return history;
+/**
+ * @return {filebrowser.FileList}
+ */
+filebrowser.FileBrowser.prototype.decorateContentElement_ = function() {
+  var list = new filebrowser.FileList();
+  list.decorate(this.renderer_.getContentElement(this.element_));
+  return list;
 };
 
-filebrowser.FileBrowser.prototype.createMenu_ = function() {
-  var newFile = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FILE);
-  var newFolder = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FOLDER);
-  var form = this.renderer_.createUploadForm(this);
-  var uploadFile = new goog.ui.MenuItem(form);
-
-  var menu = new goog.ui.PopupMenu();
-  menu.addItem(newFile);
-  menu.addItem(newFolder);
-  menu.addItem(new goog.ui.MenuSeparator());
-  menu.addItem(uploadFile);
-  menu.render();
-
-  this.getHandler().
-    listen(newFile, goog.ui.Component.EventType.ACTION, this.handleNewFile).
-    listen(newFolder, goog.ui.Component.EventType.ACTION, this.handleNewFolder).
-    listen(form, goog.events.EventType.CHANGE, this.handleUploadFile);
-
-  return menu;
-};
-
-filebrowser.FileBrowser.prototype.handleNewFile = function(e) {
-};
-
-filebrowser.FileBrowser.prototype.handleNewFolder = function(e) {
-  var self = this;
-  fs.mkdir(goog.string.path.join(this.cwd_, 'dir1'), function(err) {
-    if (!err) self.refresh();
-  });
-};
-
-filebrowser.FileBrowser.prototype.handleUploadFile = function(e) {
-  var io = new goog.net.IframeIo();
-  this.getHandler().listen(
-    io, goog.net.EventType.COMPLETE, this.handleUploadComplete);
-  io.sendFromForm(e.target['form'], fs.mount + this.cwd_);
-};
-
-filebrowser.FileBrowser.prototype.handleUploadComplete = function(e) {
-  /** @type {goog.net.IframeIo} */
-  var io = e.target;
-  if (io.isSuccess()) {
-    this.refresh();
-  }
-};
-
-filebrowser.FileBrowser.prototype.handleContentContextMenu = function(e) {
-  if (this.isEnabled()
-      && (e.target === this.getContentElement()
-          || e.target === this.getOwnerControl(e.target).getElement())) {
-    this.menu_.showAt(e.clientX, e.clientY);
-  }
-  e.preventDefault();
-  e.stopPropagation();
-};
-
-filebrowser.FileBrowser.prototype.handleHistoryChange = function(e) {
-  this.backButton_.setEnabled(e.target.canMoveBack());
-  this.forwardButton_.setEnabled(e.target.canMoveForward());
-};
-
+/**
+ * @param {goog.events.BrowserEvent} e
+ */
 filebrowser.FileBrowser.prototype.handleBackAction = function(e) {
-  if (this.history_.canMoveBack()) {
-    this.history_.moveBack();
-    this.setCwd(this.history_.getPath());
-  }
+  alert('back');
 };
 
+/**
+ * @param {goog.events.BrowserEvent} e
+ */
 filebrowser.FileBrowser.prototype.handleForwardAction = function(e) {
-  if (this.history_.canMoveForward()) {
-    this.history_.moveForward();
-    this.setCwd(this.history_.getPath());
-  }
-};
-
-filebrowser.FileBrowser.prototype.handleSelectItem = function(e) {
-  if (this.isEnabled()) {
-    if (this.selectedItem_ && e.target !== this.selectedItem_) {
-      this.selectedItem_.setSelected(false);
-    }
-    this.selectedItem_ = e.target;
-  }
-};
-
-filebrowser.FileBrowser.prototype.handleUnSelectItem = function(e) {
-  if (this.isEnabled()
-      && this.selectedItem_
-      && e.target === this.selectedItem_) {
-    this.selectedItem_ = null;
-  }
-};
-
-filebrowser.FileBrowser.prototype.handleContentMouseDown = function(e) {
-  if (this.isEnabled()
-      && this.selectedItem_
-      && (e.target === this.getContentElement()
-          || e.target === this.getOwnerControl(e.target).getElement())) {
-    this.selectedItem_.setSelected(false);
-    this.selectedItem_ = null;
-  }
-};
-
-filebrowser.FileBrowser.prototype.handleContentDblClick = function(e) {
-  this.handleContentMouseDown(e);
-  if (this.isEnabled() && e.target !== this.getContentElement()) {
-    var child = this.getOwnerControl(e.target);
-    var stats = child.getStats();
-    if (stats && stats.isDirectory()) {
-      var dirname = child.getFilename();
-      this.setCwd(dirname);
-      this.history_.enter(dirname);
-    }
-  }
-};
-
-filebrowser.FileBrowser.prototype.handleChildMouseEvents = function(e) {
-  var control = this.getOwnerControl(e.target);
-  if (control) {
-    switch (e.type) {
-      case goog.events.EventType.MOUSEDOWN:
-        control.handleMouseDown(e);
-        break;
-      case goog.events.EventType.MOUSEUP:
-        control.handleMouseUp(e);
-        break;
-      case goog.events.EventType.MOUSEOVER:
-        control.handleMouseOver(e);
-        break;
-      case goog.events.EventType.MOUSEOUT:
-        control.handleMouseOut(e);
-        break;
-      case goog.events.EventType.CONTEXTMENU:
-        control.handleContextMenu(e);
-        break;
-      case goog.events.EventType.DBLCLICK:
-        control.handleDblClick(e);
-        break
-    }
-  }
-};
-
-filebrowser.FileBrowser.prototype.refresh = function() {
-  this.removeChildren(true);
-  var self = this;
-  fs.readdir(this.cwd_, function(err, files) {
-    if (!err) {
-      files.forEach(function(file) {
-        self.addChild(
-          new filebrowser.File(goog.string.path.join(self.cwd_, file)),
-          true);
-      });
-    }
-  });
+  alert('forward');
 };

@@ -18,13 +18,17 @@ goog.require('filebrowser.FileRenderer');
 <script>
 describe('filebrowser.FileRenderer', function() {
   var renderer;
-  var statsFile = new fs.Stats(fs.Stats.Mode.REGULAR_FILE);
-  var statsDirectory = new fs.Stats(fs.Stats.Mode.DIRECTORY);
-  var file = new filebrowser.File('/file.txt', statsFile);
-  var directory = new filebrowser.File('/dir', statsDirectory);
+  var statsFile;
+  var statsDirectory;
+  var file;
+  var directory;
 
   before(function() {
     renderer = filebrowser.FileRenderer.getInstance();
+    statsFile = new fs.Stats(fs.Stats.Mode.REGULAR_FILE);
+    statsDirectory = new fs.Stats(fs.Stats.Mode.DIRECTORY);
+    file = new filebrowser.File('/file.txt', statsFile);
+    directory = new filebrowser.File('/dir', statsDirectory);
   });
 
   describe('getInstance()', function() {
@@ -58,18 +62,16 @@ describe('filebrowser.FileRenderer', function() {
 
     it('first child should be a DIV with class fb-file-icon', function() {
       expect(element.firstChild.tagName).to.be('DIV');
-      expect(element.firstChild.className).to.be('fb-file-icon');
+      expect(element.firstChild.className).to.contain('fb-file-icon');
     });
 
     it('first child should have a file icon when stats is file', function() {
-      var iconUrl = element.firstChild.style.backgroundImage;
-      expect(iconUrl).to.contain('file_browser/mime/unknown.png');
+      expect(element.firstChild.className).to.contain('fb-file-icon-unknown');
     });
 
     it('first child should have a folder icon when stats is directory', function() {
       element = renderer.createDom(directory);
-      var iconUrl = element.firstChild.style.backgroundImage;
-      expect(iconUrl).to.contain('file_browser/folder.png');
+      expect(element.firstChild.className).to.contain('fb-file-icon-folder');
     });
 
     it('second child should be a DIV with class fb-file-name', function() {
@@ -77,8 +79,8 @@ describe('filebrowser.FileRenderer', function() {
       expect(element.firstChild.nextSibling.className).to.be('fb-file-name');
     });
 
-    it('second child should contains filename', function() {
-      expect(element.firstChild.nextSibling.textContent).to.be('/file.txt');
+    it('second child should contain filename', function() {
+      expect(element.firstChild.nextSibling.textContent).to.be('file.txt');
     });
   });
 
@@ -105,14 +107,12 @@ describe('filebrowser.FileRenderer', function() {
 
     it('should set a file icon when stats is file', function() {
       renderer.setStats(element, statsFile);
-      var iconUrl = renderer.getIconElement(element).style.backgroundImage;
-      expect(iconUrl).to.contain('file_browser/mime/unknown.png');
+      expect(element.firstChild.className).to.contain('fb-file-icon-unknown');
     });
 
     it('should set a folder icon when stats is directory', function() {
       renderer.setStats(element, statsDirectory);
-      var iconUrl = renderer.getIconElement(element).style.backgroundImage;
-      expect(iconUrl).to.contain('file_browser/folder.png');
+      expect(element.firstChild.className).to.contain('fb-file-icon-folder');
     });
   });
 });

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unit Tests - filebrowser.FileBrowserRenderer</title>
+<link rel="stylesheet" href="../../../node_modules/mocha/mocha.css" />
+<script src="../../../node_modules/mocha/mocha.js"></script>
+<script src="../../../node_modules/expect.js/expect.js"></script>
+<script src="../../deps/closure-library/closure/goog/base.js"></script>
+<script src="../deps.js"></script>
+<script>
+goog.require('filebrowser.FileBrowser');
+goog.require('filebrowser.FileBrowserRenderer');
+</script>
+</head>
+<body>
+<div id="mocha"></div>
+<script>mocha.setup('bdd')</script>
+<script>
+describe('filebrowser.FileBrowserRenderer', function() {
+  var renderer;
+  var fb;
+
+  before(function() {
+    renderer = filebrowser.FileBrowserRenderer.getInstance();
+    fb = new filebrowser.FileBrowser('/');
+  });
+
+  describe('getInstance()', function() {
+    it('should return a FileBrowserRenderer', function() {
+      expect(renderer).to.be.a(filebrowser.FileBrowserRenderer);
+    });
+
+    it('should return the same object each time', function() {
+      var another = filebrowser.FileBrowserRenderer.getInstance();
+      expect(another).to.be(renderer);
+    });
+  });
+
+  describe('getCssClass()', function() {
+    it('should return fb', function() {
+      expect(renderer.getCssClass()).to.be('fb');
+    });
+  });
+
+  describe('createDom()', function() {
+    var element;
+
+    beforeEach(function() {
+      element = renderer.createDom(fb);
+    });
+
+    it('should return a DIV with class fb', function() {
+      expect(element.tagName).to.be('DIV');
+      expect(element.className).to.be('fb');
+    });
+
+    it('first child should be a DIV with class fb-cwd', function() {
+      expect(element.firstChild.tagName).to.be('DIV');
+      expect(element.firstChild.className).to.contain('fb-cwd');
+    });
+
+    it('first child should contain current working directory', function() {
+      expect(element.firstChild.textContent).to.be('/');
+    });
+
+    it('second child should be a DIV with class fb-back', function() {
+      expect(element.firstChild.nextSibling.tagName).to.be('DIV');
+      expect(element.firstChild.nextSibling.className).to.be('fb-back');
+    });
+
+    it('third child should be a DIV with class fb-forward', function() {
+      var third = element.firstChild.nextSibling.nextSibling;
+      expect(third.tagName).to.be('DIV');
+      expect(third.className).to.be('fb-forward');
+    });
+
+    it('forth child should be a DIV with class fb-fl', function() {
+      var forth = element.firstChild.nextSibling.nextSibling.nextSibling;
+      expect(forth.tagName).to.be('DIV');
+      expect(forth.className).to.be('fb-fl');
+    });
+  });
+
+  describe('getCwdElement()', function() {
+    it('should return the first child', function() {
+      var element = renderer.createDom(fb);
+      expect(renderer.getCwdElement(element)).to.be(element.firstChild);
+    });
+  });
+
+  describe('getBackElement()', function() {
+    it('should return the second child', function() {
+      var element = renderer.createDom(fb);
+      var second = element.firstChild.nextSibling;
+      expect(renderer.getBackElement(element)).to.be(second);
+    });
+  });
+
+  describe('getForwardElement()', function() {
+    it('should return the third child', function() {
+      var element = renderer.createDom(fb);
+      var third = element.firstChild.nextSibling.nextSibling;
+      expect(renderer.getForwardElement(element)).to.be(third);
+    });
+  });
+
+  describe('getContentElement()', function() {
+    it('should return the forth child', function() {
+      var element = renderer.createDom(fb);
+      var forth = element.firstChild.nextSibling.nextSibling.nextSibling;
+      expect(renderer.getContentElement(element)).to.be(forth);
+    });
+  });
+});
+</script>
+<script>mocha.run()</script>
+</body>
+</html>

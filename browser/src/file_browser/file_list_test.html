@@ -18,26 +18,13 @@ goog.require('filebrowser.FileList');
 describe('filebrowser.FileList', function() {
   var list;
 
-  before(function() {
+  beforeEach(function() {
     list = new filebrowser.FileList();
   });
 
   describe('constructor', function() {
     it('should return a FileList', function() {
       expect(list).to.be.a(filebrowser.FileList);
-    });
-  });
-
-  describe('getPath()', function() {
-    it('should return the current path', function() {
-      expect(list.getPath()).to.be('/');
-    });
-  });
-
-  describe('setPath()', function() {
-    it('should save the path specified', function() {
-      list.setPath('/');
-      expect(list.getPath()).to.be('/');
     });
   });
 });

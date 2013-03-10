@@ -2,9 +2,9 @@ goog.provide('fs.Stats');
 goog.provide('fs.Stats.Mode');
 
 /**
- * @param {number} mode
- * @param {number} size
- * @param {Date} mtime
+ * @param {number=} mode
+ * @param {number=} size
+ * @param {Date=} mtime
  * @constructor
  */
 fs.Stats = function(mode, size, mtime) {

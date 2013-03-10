@@ -1,6 +1,7 @@
 goog.provide('filebrowser.FileRenderer');
 
 goog.require('fs.Stats');
+goog.require('goog.dom.classes');
 goog.require('goog.ui.ControlRenderer');
 
 /**
@@ -57,9 +58,9 @@ filebrowser.FileRenderer.prototype.getIconElement = function(element) {
  * @param {fs.Stats} stats
  */
 filebrowser.FileRenderer.prototype.setStats = function(element, stats) {
-  var iconElement = this.getIconElement(element);
-  var iconUrl = this.getIconUrl_(stats);
-  goog.style.setStyle(iconElement, 'background-image', iconUrl);
+  goog.dom.classes.set(
+    this.getIconElement(element),
+    this.getIconElementClass_(stats).join(' '));
 };
 
 /**
@@ -68,12 +69,24 @@ filebrowser.FileRenderer.prototype.setStats = function(element, stats) {
  * @private
  */
 filebrowser.FileRenderer.prototype.createIconElement_ = function(control) {
-  var element = control.getDomHelper().createDom(
+  return control.getDomHelper().createDom(
     'div',
-    goog.getCssName(filebrowser.FileRenderer.CSS_CLASS, 'icon'));
-  var iconUrl = this.getIconUrl_(control.getStats());
-  goog.style.setStyle(element, 'background-image', iconUrl);
-  return element;
+    this.getIconElementClass_(control.getStats()));
+};
+
+/**
+ * @param {fs.Stats} stats
+ * @return {Array.<string>}
+ * @private
+ */
+filebrowser.FileRenderer.prototype.getIconElementClass_ = function(stats) {
+  var classNames = [
+    goog.getCssName(filebrowser.FileRenderer.CSS_CLASS, 'icon')
+  ];
+  classNames.push(stats.isFile() ?
+    goog.getCssName(filebrowser.FileRenderer.CSS_CLASS, 'icon-unknown') :
+    goog.getCssName(filebrowser.FileRenderer.CSS_CLASS, 'icon-folder'));
+  return classNames;
 };
 
 /**

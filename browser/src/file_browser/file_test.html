@@ -13,14 +13,35 @@ goog.require('filebrowser.File');
 </head>
 <body>
 <div id="mocha"></div>
+<div id="sandbox" style="height:0;overflow:hidden;"></div>
 <script>mocha.setup('bdd')</script>
 <script>
 describe('filebrowser.File', function() {
+  var stats;
   var file;
-  var stats = new fs.Stats();
+  var events;
+  var iconElement;
+  var nameElement;
 
-  before(function() {
-    file = new filebrowser.File('/file.txt', stats);
+  beforeEach(function() {
+    stats = new fs.Stats(fs.Stats.Mode.REGULAR_FILE);
+    file = new filebrowser.File('/path/to/file.txt', stats);
+    file.render(goog.dom.getElement('sandbox'));
+    iconElement = file.getRenderer().getIconElement(file.getElement());
+    nameElement = file.getRenderer().getContentElement(file.getElement());
+    goog.events.listen(
+      file,
+      [
+        goog.ui.Component.EventType.SELECT
+      ],
+      function(e) {
+        events.push(e.type);
+      });
+    events = [];
+  });
+
+  afterEach(function() {
+    file.dispose();
   });
 
   describe('constructor', function() {
@@ -31,13 +52,77 @@ describe('filebrowser.File', function() {
 
   describe('getFilename()', function() {
     it('should return current filename', function() {
-      expect(file.getFilename()).to.be('/file.txt');
+      expect(file.getFilename()).to.be('/path/to/file.txt');
     });
   });
 
   describe('getStats()', function() {
     it('should return current stats', function() {
       expect(file.getStats()).to.be(stats);
+    });
+  });
+
+  describe('shouldHandleMouseEvent()', function() {
+    it('should return true when icon element is given', function() {
+      expect(file.shouldHandleMouseEvent(iconElement)).to.be(true);
+    });
+
+    it('should return true when name element is given', function() {
+      expect(file.shouldHandleMouseEvent(nameElement)).to.be(true);
+    });
+
+    it('should return false otherwise', function() {
+      expect(file.shouldHandleMouseEvent(file.getElement())).to.be(false);
+    });
+  });
+
+  describe('handleMouseDown()', function() {
+    it('should select the file when icon is clicked', function() {
+      file.handleMouseDown(new goog.events.BrowserEvent({
+        type: goog.events.EventType.MOUSEDOWN,
+        target: iconElement,
+        button: goog.events.BrowserEvent.MouseButton.LEFT
+      }));
+      expect(file.isSelected()).to.be(true);
+    });
+
+    it('should select the file when name is clicked', function() {
+      file.handleMouseDown(new goog.events.BrowserEvent({
+        type: goog.events.EventType.MOUSEDOWN,
+        target: nameElement,
+        button: goog.events.BrowserEvent.MouseButton.LEFT
+      }));
+      expect(file.isSelected()).to.be(true);
+    });
+
+    it('should not select the file otherwise', function() {
+      file.handleMouseDown(new goog.events.BrowserEvent({
+        type: goog.events.EventType.MOUSEDOWN,
+        target: file.getElement(),
+        button: goog.events.BrowserEvent.MouseButton.LEFT
+      }));
+      expect(file.isSelected()).to.be(false);
+    });
+
+    it('should dispatch SELECT event when not selected', function() {
+      file.handleMouseDown(new goog.events.BrowserEvent({
+        type: goog.events.EventType.MOUSEDOWN,
+        target: iconElement,
+        button: goog.events.BrowserEvent.MouseButton.LEFT
+      }));
+      expect(events).to.have.length(1);
+      expect(events[0]).to.be(goog.ui.Component.EventType.SELECT);
+    });
+
+    it('should not dispatch SELECT event when selected', function() {
+      file.setSelected(true);
+      expect(events).to.have.length(1);
+      file.handleMouseDown(new goog.events.BrowserEvent({
+        type: goog.events.EventType.MOUSEDOWN,
+        target: iconElement,
+        button: goog.events.BrowserEvent.MouseButton.LEFT
+      }));
+      expect(events).to.have.length(1);
     });
   });
 });

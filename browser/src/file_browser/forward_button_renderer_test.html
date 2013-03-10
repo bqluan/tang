@@ -1,40 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Unit Tests - filebrowser.FileListRenderer</title>
+<title>Unit Tests - filebrowser.ForwardButtonRenderer</title>
 <link rel="stylesheet" href="../../../node_modules/mocha/mocha.css" />
 <script src="../../../node_modules/mocha/mocha.js"></script>
 <script src="../../../node_modules/expect.js/expect.js"></script>
 <script src="../../deps/closure-library/closure/goog/base.js"></script>
 <script src="../deps.js"></script>
 <script>
-goog.require('filebrowser.FileListRenderer');
+goog.require('filebrowser.ForwardButtonRenderer');
 </script>
 </head>
 <body>
 <div id="mocha"></div>
 <script>mocha.setup('bdd')</script>
 <script>
-describe('filebrowser.FileListRenderer', function() {
+describe('filebrowser.ForwardButtonRenderer', function() {
   var renderer;
 
-  beforeEach(function() {
-    renderer = filebrowser.FileListRenderer.getInstance();
+  before(function() {
+    renderer = filebrowser.ForwardButtonRenderer.getInstance();
   });
 
   describe('getInstance()', function() {
-    it('should return a FileListRenderer', function() {
-      expect(renderer).to.be.a(filebrowser.FileListRenderer);
+    it('should return a ForwardButtonRenderer', function() {
+      expect(renderer).to.be.a(filebrowser.ForwardButtonRenderer);
     });
+
     it('should return the same object each time', function() {
-      var another= filebrowser.FileListRenderer.getInstance();
+      var another = filebrowser.ForwardButtonRenderer.getInstance();
       expect(another).to.be(renderer);
     });
   });
 
   describe('getCssClass()', function() {
-    it('should return fb-fl', function() {
-      expect(renderer.getCssClass()).to.be('fb-fl');
+    it('should return fb-forward', function() {
+      expect(renderer.getCssClass()).to.be('fb-forward');
     });
   });
 });

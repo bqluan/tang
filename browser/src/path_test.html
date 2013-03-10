@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Unit Tests - path</title>
+<link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+<script src="../../node_modules/mocha/mocha.js"></script>
+<script src="../../node_modules/expect.js/expect.js"></script>
+<script src="../deps/closure-library/closure/goog/base.js"></script>
+<script src="deps.js"></script>
+<script>
+goog.require('path');
+</script>
+</head>
+<body>
+<div id="mocha"></div>
+<script>mocha.setup('bdd')</script>
+<script>
+describe('path.basename()', function() {
+  it('should return abc when given /path/to/abc', function() {
+    expect(path.basename('/path/to/abc')).to.be('abc');
+  });
+
+  it('should return abc.txt when given /path/to/abc.txt', function() {
+    expect(path.basename('/path/to/abc.txt')).to.be('abc.txt');
+  });
+
+  it('should return abc.txt when given path/to/abc.txt', function() {
+    expect(path.basename('path/to/abc.txt')).to.be('abc.txt');
+  });
+
+  it('should return abc when given abc', function() {
+    expect(path.basename('abc')).to.be('abc');
+  });
+
+  it('should return empty when given empty', function() {
+    expect(path.basename('')).to.be('');
+  });
+});
+
+describe('path.normalize()', function() {
+  it('should return /foo/bar when given /foo/bar', function() {
+    expect(path.normalize('/foo/bar')).to.be('/foo/bar');
+  });
+
+  it('should return / when given /foo/..', function() {
+    expect(path.normalize('/foo/..')).to.be('/');
+  });
+
+  it('should return / when given /foo/../..', function() {
+    expect(path.normalize('/foo/../..')).to.be('/');
+  });
+
+  it('should return /foo when given /foo/.', function() {
+    expect(path.normalize('/foo/.')).to.be('/foo');
+  });
+
+  it('should return /foo/bar when given /foo//bar', function() {
+    expect(path.normalize('/foo//bar')).to.be('/foo/bar');
+  });
+
+  it('should return . when given .', function() {
+    expect(path.normalize('.')).to.be('.');
+  });
+
+  it('should return . when given ..', function() {
+    expect(path.normalize('..')).to.be('..');
+  });
+});
+
+describe('path.join()', function() {
+  it('should return /foo/bar when given /foo and bar', function() {
+    expect(path.join('/foo', 'bar')).to.be('/foo/bar');
+  });
+
+  it('should return / when given /foo and ..', function() {
+    expect(path.join('/foo', '..')).to.be('/');
+  });
+
+  it('should return / when given /foo and ../..', function() {
+    expect(path.join('/foo', '../..')).to.be('/');
+  });
+
+  it('should return /foo when given /foo and .', function() {
+    expect(path.join('/foo', '.')).to.be('/foo');
+  });
+});
+</script>
+<script>mocha.run()</script>
+</body>
+</html>
