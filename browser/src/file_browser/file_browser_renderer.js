@@ -20,6 +20,14 @@ filebrowser.FileBrowserRenderer.prototype.getCssClass = function() {
 };
 
 /**
+ * @param {Element} element
+ * @param {string} cwd
+ */
+filebrowser.FileBrowserRenderer.prototype.setCwd = function(element, cwd) {
+  goog.dom.setTextContent(this.getCwdElement(element), cwd);
+};
+
+/**
  * @param {filebrowser.FileBrowser}
  * @return {Element}
  */

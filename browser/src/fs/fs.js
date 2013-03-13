@@ -2,6 +2,7 @@ goog.provide('fs');
 
 goog.require('fs.FSError');
 goog.require('fs.Stats');
+goog.require('goog.net.IframeIo');
 goog.require('goog.net.XhrIo');
 
 /**
@@ -76,4 +77,21 @@ fs.lstat = function(filename, callback) {
         callback(newFSError(res));
     },
     'HEAD');
+};
+
+/**
+ * @param {string} filename
+ * @param {Function} callback
+ */
+fs.download = function(filename, callback) {
+  goog.net.IframeIo.send(
+    getUri(filename),
+    /**
+     * @param {goog.events.Event} e
+     */
+    function(e) {
+      /** @type {goog.net.IframeIo} */
+      var res = e.target;
+      res.isSuccess() ? callback() : callback(newFSError(res));
+    });
 };

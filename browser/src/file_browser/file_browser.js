@@ -5,6 +5,7 @@ goog.require('filebrowser.File');
 goog.require('filebrowser.FileBrowserRenderer');
 goog.require('filebrowser.FileList');
 goog.require('filebrowser.ForwardButtonRenderer');
+goog.require('filebrowser.History');
 goog.require('fs');
 goog.require('goog.ui.Button');
 goog.require('goog.ui.Component');
@@ -41,10 +42,26 @@ filebrowser.FileBrowser.prototype.forwardButton_;
 filebrowser.FileBrowser.prototype.fileList_;
 
 /**
+ * @type {filebrowser.History}
+ */
+filebrowser.FileBrowser.prototype.history_;
+
+/**
  * @return {string}
  */
 filebrowser.FileBrowser.prototype.getCwd = function() {
   return this.cwd_;
+};
+
+/**
+ * @param {string} cwd
+ */
+filebrowser.FileBrowser.prototype.setCwd = function(cwd) {
+  if (cwd !== this.cwd_) {
+    this.cwd_ = cwd;
+    this.renderer_.setCwd(this.element_, path.basename(cwd) || '/');
+    this.refresh();
+  }
 };
 
 /** @override */
@@ -55,9 +72,22 @@ filebrowser.FileBrowser.prototype.createDom = function() {
 /** @override */
 filebrowser.FileBrowser.prototype.enterDocument = function() {
   filebrowser.FileBrowser.superClass_.enterDocument.call(this);
+
   this.backButton_ = this.decorateBackElement_();
+  this.backButton_.setParent(this);
+
   this.forwardButton_ = this.decorateForwardElement_();
+  this.forwardButton_.setParent(this);
+
   this.fileList_ = this.decorateContentElement_();
+  this.fileList_.setParent(this);
+
+  this.getHandler().listen(
+    this, filebrowser.File.EventType.OPEN, this.handleFileOpen);
+
+  this.history_ = this.createBrowsingHistory_();
+  this.history_.push(this.cwd_);
+
   this.refresh();
 };
 
@@ -95,6 +125,16 @@ filebrowser.FileBrowser.prototype.refresh = function() {
 };
 
 /**
+ * @return {filebrowser.History}
+ */
+filebrowser.FileBrowser.prototype.createBrowsingHistory_ = function() {
+  var history = new filebrowser.History();
+  this.getHandler().listen(
+    history, goog.events.EventType.CHANGE, this.handleHistoryChange);
+  return history;
+};
+
+/**
  * @return {goog.ui.Button}
  */
 filebrowser.FileBrowser.prototype.decorateBackElement_ = function() {
@@ -129,16 +169,42 @@ filebrowser.FileBrowser.prototype.decorateContentElement_ = function() {
   return list;
 };
 
+filebrowser.FileBrowser.prototype.handleHistoryChange = function(e) {
+  /** @type {filebrowser.History} */
+  var history = e.target;
+  this.backButton_.setEnabled(history.canMoveBack());
+  this.forwardButton_.setEnabled(history.canMoveForward());
+};
+
 /**
  * @param {goog.events.BrowserEvent} e
  */
 filebrowser.FileBrowser.prototype.handleBackAction = function(e) {
-  alert('back');
+  if (this.history_.canMoveBack()) {
+    this.history_.moveBack();
+    this.setCwd(this.history_.peek());
+  }
 };
 
 /**
  * @param {goog.events.BrowserEvent} e
  */
 filebrowser.FileBrowser.prototype.handleForwardAction = function(e) {
-  alert('forward');
+  if (this.history_.canMoveForward()) {
+    this.history_.moveForward();
+    this.setCwd(this.history_.peek());
+  }
+};
+
+/**
+ * @param {goog.events.BrowserEvent} e
+ */
+filebrowser.FileBrowser.prototype.handleFileOpen = function(e) {
+  /** @type {filebrowser.File} */
+  var file = e.target;
+  if (file.getStats().isDirectory()) {
+    var dirname = file.getFilename();
+    this.setCwd(dirname);
+    this.history_.push(dirname);
+  }
 };
