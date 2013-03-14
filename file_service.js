@@ -104,12 +104,19 @@ var saveFile = function(req, res, next) {
       }));
 };
 
+var del = function(req, res, next) {
+  fs.unlink(req.file, function(err) {
+    err ? next(err) : res.send(200);
+  });
+};
+
 var app = module.exports = express();
 
 app.put('/*', parseFile, parseBody, mkdir, write, error);
 app.get('/*', parseFile, lstat, readDir, downloadFile, error);
 app.head('/*', parseFile, lstat, readDir, downloadFile, error);
 app.post('/*', parseFile, express.multipart(), notExist, saveFile, error);
+app.del('/*', parseFile, del, error);
 
 if (!module.parent) {
   app.listen(1337);

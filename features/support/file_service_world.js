@@ -53,15 +53,31 @@ World.prototype.head = function(file, done) {
   });
 };
 
+World.prototype.del = function(filename, done) {
+  var self = this;
+  request.del(uriPrefix + filename, function(err, res, body) {
+    self.err = err;
+    self.res = res;
+    self.body = body;
+    done();
+  });
+};
+
 World.prototype.writeFile = function(filename, data, done) {
   fs.writeFile(path_.join(mount, filename), data, function(err) {
     err ? done.fail(err) : done();
   });
 };
 
-World.prototype.shouldExists = function(filename, done) {
+World.prototype.shouldExist = function(filename, done) {
   fs.exists(path_.join(mount, filename), function(exists) {
     exists ? done() : done.fail(new Error('file does not exist'));
+  });
+};
+
+World.prototype.shouldNotExist = function(filename, done) {
+  fs.exists(path_.join(mount, filename), function(exists) {
+    exists ? done.fail(new Error('file exists')) : done();
   });
 };
 

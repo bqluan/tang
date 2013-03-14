@@ -39,12 +39,20 @@ module.exports = function() {
     this.mkdir(path, done);
   });
 
+  this.When(/^I delete file (.*)$/, function(filename, done) {
+    this.del(filename, done);
+  });
+
+  this.Then(/^I should not have file (.*)$/, function(filename, done) {
+    this.shouldNotExist(filename, done);
+  });
+
   this.Then(/^I should have directory (.*)$/, function(path, done) {
-    this.shouldExists(path, done);
+    this.shouldExist(path, done);
   });
 
   this.Then(/^I should have file (.*)$/, function(filename, done) {
-    this.shouldExists(filename, done);
+    this.shouldExist(filename, done);
   });
 
   this.Then(/^I should see status code (\d+)$/, function(statusCode, done) {
