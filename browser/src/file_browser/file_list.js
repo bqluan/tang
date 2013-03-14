@@ -162,7 +162,18 @@ filebrowser.FileList.prototype.handleDownload = function(e) {
  * @param {goog.events.Event} e
  */
 filebrowser.FileList.prototype.handleDelete = function(e) {
-  alert('del');
+  if (this.isEnabled()
+      && this.selectedItem_
+      && this.selectedItem_.getStats().isFile()) {
+    var self = this;
+    fs.unlink(this.selectedItem_.getFilename(), function(err) {
+      if (!err) {
+        self.removeChild(self.selectedItem_, true);
+        self.selectedItem_.dispose();
+        self.selectedItem_ = null;
+      }
+    });
+  }
 };
 
 /**

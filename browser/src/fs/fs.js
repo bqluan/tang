@@ -95,3 +95,23 @@ fs.download = function(filename, callback) {
       res.isSuccess() ? callback() : callback(newFSError(res));
     });
 };
+
+/**
+ * @param {string} filename
+ * @param {Function} callback
+ */
+fs.unlink = function(filename, callback) {
+  goog.net.XhrIo.send(
+    getUri(filename),
+    /**
+     * @param {goog.events.Event} e
+     */
+    function(e) {
+      /** @type {goog.net.XhrIo} */
+      var res = e.target;
+      res.isSuccess() ?
+        callback(null, newStats(res)) :
+        callback(newFSError(res));
+    },
+    'DELETE');
+};
