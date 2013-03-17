@@ -62,8 +62,12 @@ describe('path.normalize()', function() {
     expect(path.normalize('.')).to.be('.');
   });
 
-  it('should return . when given ..', function() {
+  it('should return .. when given ..', function() {
     expect(path.normalize('..')).to.be('..');
+  });
+
+  it('should return ../../bar when given foo/../../../bar', function() {
+    expect(path.normalize('foo/../../../bar')).to.be('../../bar');
   });
 });
 

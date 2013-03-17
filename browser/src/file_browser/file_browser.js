@@ -64,12 +64,16 @@ filebrowser.FileBrowser.prototype.setCwd = function(cwd) {
   }
 };
 
-/** @override */
+/**
+ * @override
+ */
 filebrowser.FileBrowser.prototype.createDom = function() {
   this.element_ = this.renderer_.createDom(this);
 };
 
-/** @override */
+/**
+ * @override
+ */
 filebrowser.FileBrowser.prototype.enterDocument = function() {
   filebrowser.FileBrowser.superClass_.enterDocument.call(this);
 
@@ -134,6 +138,9 @@ filebrowser.FileBrowser.prototype.decorateContentElement_ = function() {
   return list;
 };
 
+/**
+ * @param {goog.events.Event} e
+ */
 filebrowser.FileBrowser.prototype.handleHistoryChange = function(e) {
   /** @type {filebrowser.History} */
   var history = e.target;
@@ -162,7 +169,7 @@ filebrowser.FileBrowser.prototype.handleForwardAction = function(e) {
 };
 
 /**
- * @param {goog.events.BrowserEvent} e
+ * @param {goog.events.Event} e
  */
 filebrowser.FileBrowser.prototype.handleFileOpen = function(e) {
   /** @type {filebrowser.File} */

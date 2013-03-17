@@ -36,7 +36,7 @@ function normalizeArray(parts, allowAboveRoot) {
 
   // if the path is allowed to go above the root, restore leading ..s
   if (allowAboveRoot) {
-    for (; up--; up) {
+    for (; up; up--) {
       parts.unshift('..');
     }
   }
