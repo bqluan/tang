@@ -4,13 +4,13 @@ goog.addDependency('../../../../src/file_browser/back_button_renderer.js', ['fil
 goog.addDependency('../../../../src/file_browser/file.js', ['filebrowser.File', 'filebrowser.File.EventType'], ['filebrowser.FileRenderer', 'fs', 'fs.Stats', 'goog.ui.Control', 'path']);
 goog.addDependency('../../../../src/file_browser/file_browser.js', ['filebrowser.FileBrowser'], ['filebrowser.BackButtonRenderer', 'filebrowser.File', 'filebrowser.FileBrowserRenderer', 'filebrowser.FileList', 'filebrowser.ForwardButtonRenderer', 'filebrowser.History', 'fs', 'goog.ui.Button', 'goog.ui.Component', 'path']);
 goog.addDependency('../../../../src/file_browser/file_browser_renderer.js', ['filebrowser.FileBrowserRenderer'], []);
-goog.addDependency('../../../../src/file_browser/file_list.js', ['filebrowser.FileList'], ['filebrowser.File', 'filebrowser.FileListRenderer', 'filebrowser.Symbols_zh', 'fs', 'goog.ui.Container', 'goog.ui.Menu', 'goog.ui.MenuSeparator', 'goog.ui.PopupMenu']);
+goog.addDependency('../../../../src/file_browser/file_list.js', ['filebrowser.FileList'], ['filebrowser.File', 'filebrowser.FileListRenderer', 'filebrowser.Symbols_zh', 'fs', 'goog.ui.Container', 'goog.ui.Menu', 'goog.ui.MenuSeparator', 'goog.ui.PopupMenu', 'path']);
 goog.addDependency('../../../../src/file_browser/file_list_renderer.js', ['filebrowser.FileListRenderer'], ['goog.ui.ContainerRenderer']);
 goog.addDependency('../../../../src/file_browser/file_renderer.js', ['filebrowser.FileRenderer'], ['fs.Stats', 'goog.dom.classes', 'goog.ui.ControlRenderer']);
 goog.addDependency('../../../../src/file_browser/forward_button_renderer.js', ['filebrowser.ForwardButtonRenderer'], ['goog.ui.ButtonRenderer']);
 goog.addDependency('../../../../src/file_browser/history.js', ['filebrowser.History'], ['goog.events.Event', 'goog.events.EventTarget', 'goog.events.EventType']);
 goog.addDependency('../../../../src/file_browser/symbols.js', ['filebrowser.Symbols_zh'], []);
-goog.addDependency('../../../../src/fs/fs.js', ['fs'], ['fs.FSError', 'fs.Stats', 'goog.net.IframeIo', 'goog.net.XhrIo']);
+goog.addDependency('../../../../src/fs/fs.js', ['fs'], ['fs.FSError', 'fs.Stats', 'goog.events', 'goog.net.IframeIo', 'goog.net.XhrIo']);
 goog.addDependency('../../../../src/fs/fserror.js', ['fs.FSError'], []);
 goog.addDependency('../../../../src/fs/stats.js', ['fs.Stats', 'fs.Stats.Mode'], []);
 goog.addDependency('../../../../src/index.js', ['main'], ['filebrowser.FileBrowser', 'fs']);

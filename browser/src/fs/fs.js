@@ -2,6 +2,7 @@ goog.provide('fs');
 
 goog.require('fs.FSError');
 goog.require('fs.Stats');
+goog.require('goog.events');
 goog.require('goog.net.IframeIo');
 goog.require('goog.net.XhrIo');
 
@@ -114,4 +115,25 @@ fs.unlink = function(filename, callback) {
         callback(newFSError(res));
     },
     'DELETE');
+};
+
+/**
+ * @param {string} dirname
+ * @param {HTMLFormElement} form
+ * @param {Function} callback
+ */
+fs.upload = function(dirname, form, callback) {
+  var io = new goog.net.IframeIo();
+  goog.events.listen(
+    io,
+    goog.net.EventType.COMPLETE,
+    /**
+     * @param {goog.events.Event} e
+     */
+    function(e) {
+      /** @type {goog.net.IframeIo} */
+      var res = e.target;
+      res.isSuccess() ? callback() : callback(newFSError(res));
+    });
+  io.sendFromForm(form, getUri(dirname));
 };

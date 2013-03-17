@@ -60,7 +60,7 @@ filebrowser.FileBrowser.prototype.setCwd = function(cwd) {
   if (cwd !== this.cwd_) {
     this.cwd_ = cwd;
     this.renderer_.setCwd(this.element_, path.basename(cwd) || '/');
-    this.refresh();
+    this.fileList_.setCwd(cwd);
   }
 };
 
@@ -87,41 +87,6 @@ filebrowser.FileBrowser.prototype.enterDocument = function() {
 
   this.history_ = this.createBrowsingHistory_();
   this.history_.push(this.cwd_);
-
-  this.refresh();
-};
-
-filebrowser.FileBrowser.prototype.refresh = function() {
-  this.fileList_.removeChildren(true);
-  var self = this;
-  /**
-   * @param {fs.FSError} err
-   * @param {Array.<string>} files
-   */
-  var onreaddir = function(err, files) {
-    if (!err) {
-      files.forEach(
-        /**
-         * @param {string} file
-         */
-        function(file) {
-          var absolute = path.join(self.cwd_, file);
-          fs.lstat(
-            absolute,
-            /**
-             * @param {fs.FSError} err
-             * @param {fs.Stats} stats
-             */
-            function(err, stats) {
-              if (!err) {
-                self.fileList_.addChild(
-                  new filebrowser.File(absolute, stats), true);
-              }
-            });
-        });
-    }
-  };
-  fs.readdir(this.cwd_, onreaddir);
 };
 
 /**
@@ -164,7 +129,7 @@ filebrowser.FileBrowser.prototype.decorateForwardElement_ = function() {
  * @return {filebrowser.FileList}
  */
 filebrowser.FileBrowser.prototype.decorateContentElement_ = function() {
-  var list = new filebrowser.FileList();
+  var list = new filebrowser.FileList(this.cwd_);
   list.decorate(this.renderer_.getContentElement(this.element_));
   return list;
 };

@@ -8,22 +8,30 @@ goog.require('goog.ui.Container');
 goog.require('goog.ui.Menu');
 goog.require('goog.ui.MenuSeparator');
 goog.require('goog.ui.PopupMenu');
+goog.require('path');
 
 /**
+ * @param {string} cwd
  * @param {filebrowser.FileListRenderer=} opt_renderer
  * @param {goog.dom.DomHelper=} opt_domHelper
  * @constructor
  * @extends {goog.ui.Container}
  */
-filebrowser.FileList = function(opt_renderer, opt_domHelper) {
+filebrowser.FileList = function(cwd, opt_renderer, opt_domHelper) {
   goog.ui.Container.call(
     this,
     goog.ui.Container.Orientation.HORIZONTAL,
     opt_renderer || filebrowser.FileListRenderer.getInstance(),
     opt_domHelper);
   this.symbols_ = filebrowser.Symbols_zh;
+  this.cwd_ = cwd;
 };
 goog.inherits(filebrowser.FileList, goog.ui.Container);
+
+/**
+ * @type {string}
+ */
+filebrowser.FileList.prototype.cwd_;
 
 /**
  * @type {filebrowser.File}
@@ -33,23 +41,42 @@ filebrowser.FileList.prototype.selectedItem_;
 /**
  * @type {goog.ui.PopupMenu}
  */
+filebrowser.FileList.prototype.menu_;
+
+/**
+ * @type {goog.ui.PopupMenu}
+ */
 filebrowser.FileList.prototype.childMenu_;
+
+/**
+ * @param {string} cwd
+ */
+filebrowser.FileList.prototype.setCwd = function(cwd) {
+  if (cwd !== this.cwd_) {
+    this.cwd_ = cwd;
+    this.refresh_();
+  }
+};
 
 /** @override */
 filebrowser.FileList.prototype.enterDocument = function() {
   filebrowser.FileList.superClass_.enterDocument.call(this);
 
+  var element = this.getElement();
   this.getHandler().
     listen(this, goog.ui.Component.EventType.SELECT, this.handleSelectItem).
-    listen(this, goog.ui.Component.EventType.UNSELECT, this.handleUnSelectItem);
+    listen(this, goog.ui.Component.EventType.UNSELECT, this.handleUnSelectItem).
+    listen(element, goog.events.EventType.CONTEXTMENU, this.handleContextMenu);
 
+  this.menu_ = this.createMenu_();
   this.childMenu_ = this.createChildMenu_();
 
-  var element = this.getElement();
   this.getHandler().listen(
     element,
     goog.events.EventType.DBLCLICK,
     this.handleChildMouseEvents);
+
+  this.refresh_();
 };
 
 /**
@@ -138,6 +165,29 @@ filebrowser.FileList.prototype.handleChildContextMenu = function(e) {
 };
 
 /**
+ * @param {goog.events.BrowserEvent} e
+ */
+filebrowser.FileList.prototype.handleContextMenu = function(e) {
+  if (this.isEnabled()) {
+    /** @type {Node} */
+    var element = e.target;
+    if (element === this.element_) {
+      this.menu_.showAt(e.clientX, e.clientY);
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      /** @type {filebrowser.File} */
+      var file = this.getOwnerControl(element);
+      if (file && !file.shouldHandleMouseEvent(element)) {
+        this.menu_.showAt(e.clientX, e.clientY);
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  }
+};
+
+/**
  * @param {goog.events.Event} e
  */
 filebrowser.FileList.prototype.handleOpen = function(e) {
@@ -177,6 +227,30 @@ filebrowser.FileList.prototype.handleDelete = function(e) {
 };
 
 /**
+ * @param {goog.events.Event} e
+ */
+filebrowser.FileList.prototype.handleNewFile = function(e) {
+};
+
+/**
+ * @param {goog.events.Event} e
+ */
+filebrowser.FileList.prototype.handleNewFolder = function(e) {
+};
+
+/**
+ * @param {goog.events.Event} e
+ */
+filebrowser.FileList.prototype.handleUploadFile = function(e) {
+  /** @type {HTMLInputElement} */
+  var input = e.target;
+  var self = this;
+  fs.upload('/', input.form, function(err) {
+    if (!err) self.refresh_();
+  });
+};
+
+/**
  * @return {goog.ui.PopupMenu}
  */
 filebrowser.FileList.prototype.createChildMenu_ = function() {
@@ -197,4 +271,72 @@ filebrowser.FileList.prototype.createChildMenu_ = function() {
     listen(del, goog.ui.Component.EventType.ACTION, this.handleDelete);
 
   return menu;
+};
+
+/**
+ * @return {goog.ui.PopupMenu}
+ */
+filebrowser.FileList.prototype.createMenu_ = function() {
+  var newFile = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FILE);
+  var newFolder = new goog.ui.MenuItem(this.symbols_.CREATE_NEW_FOLDER);
+  var form = this.createUploadForm_();
+  var uploadFile = new goog.ui.MenuItem(form);
+
+  var menu = new goog.ui.PopupMenu();
+  menu.addItem(newFile);
+  menu.addItem(newFolder);
+  menu.addItem(new goog.ui.MenuSeparator());
+  menu.addItem(uploadFile);
+  menu.render();
+
+  this.getHandler().
+    listen(newFile, goog.ui.Component.EventType.ACTION, this.handleNewFile).
+    listen(newFolder, goog.ui.Component.EventType.ACTION, this.handleNewFolder).
+    listen(form, goog.events.EventType.CHANGE, this.handleUploadFile);
+
+  return menu;
+};
+
+/**
+ * @return {HTMLFormElement}
+ */
+filebrowser.FileList.prototype.createUploadForm_ = function() {
+  var dom = this.getDomHelper();
+  return dom.createDom(
+    'form',
+    {enctype: 'multipart/form-data', method: 'POST'},
+    dom.createDom('span', null, this.symbols_.UPLOAD_FILE),
+    dom.createDom('input', {name: 'file', type: 'file'}));
+};
+
+filebrowser.FileList.prototype.refresh_ = function() {
+  this.removeChildren(true);
+  var self = this;
+  /**
+   * @param {fs.FSError} err
+   * @param {Array.<string>} files
+   */
+  var onreaddir = function(err, files) {
+    if (!err) {
+      files.forEach(
+        /**
+         * @param {string} file
+         */
+        function(file) {
+          var absolute = path.join(self.cwd_, file);
+          fs.lstat(
+            absolute,
+            /**
+             * @param {fs.FSError} err
+             * @param {fs.Stats} stats
+             */
+            function(err, stats) {
+              if (!err) {
+                self.addChild(new filebrowser.File(absolute, stats), true);
+              }
+            });
+        });
+    }
+  };
+  fs.readdir(this.cwd_, onreaddir);
 };
