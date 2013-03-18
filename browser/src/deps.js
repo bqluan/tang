@@ -13,5 +13,7 @@ goog.addDependency('../../../../src/file_browser/symbols.js', ['filebrowser.Symb
 goog.addDependency('../../../../src/fs/fs.js', ['fs'], ['fs.FSError', 'fs.Stats', 'goog.events', 'goog.net.IframeIo', 'goog.net.XhrIo']);
 goog.addDependency('../../../../src/fs/fserror.js', ['fs.FSError'], []);
 goog.addDependency('../../../../src/fs/stats.js', ['fs.Stats', 'fs.Stats.Mode'], []);
-goog.addDependency('../../../../src/index.js', ['main'], ['filebrowser.FileBrowser', 'fs']);
+goog.addDependency('../../../../src/index.js', ['main'], ['numbers.Numbers']);
+goog.addDependency('../../../../src/numbers/numbers.js', ['numbers.Numbers'], ['goog.ui.Control', 'numbers.NumbersRenderer']);
+goog.addDependency('../../../../src/numbers/numbers_renderer.js', ['numbers.NumbersRenderer'], ['goog.ui.ControlRenderer']);
 goog.addDependency('../../../../src/path.js', ['path'], []);

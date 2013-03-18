@@ -37,6 +37,26 @@ function newStats(res) {
 };
 
 /**
+ * @param {string} filename
+ * @param {Function} callback
+ */
+fs.readFile = function(filename, callback) {
+  goog.net.XhrIo.send(
+    getUri(filename),
+    /**
+     * @param {goog.events.Event} e
+     */
+    function(e) {
+      /** @type {goog.net.XhrIo} */
+      var res = e.target;
+      if (!res.isSuccess()) {
+        return callback(newFSError(res));
+      }
+      callback(null, res.getResponseText());
+    });
+};
+
+/**
  * @param {string} dirname
  * @param {Function} callback
  */

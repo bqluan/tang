@@ -1,0 +1,33 @@
+.numbers {
+  border-radius: 5px;
+  font-family: arial,sans-serif;
+  font-size: small;
+  box-shadow: 0 5px 20px #3b3b3b;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  bottom: 20px;
+  left: 20px;
+  cursor: default;
+}
+.numbers-title {
+  background: -webkit-linear-gradient(#f2f2f2, #bebebe);
+  background: -ms-linear-gradient(#f2f2f2, #bebebe);
+  background: -o-linear-gradient(#f2f2f2, #bebebe);
+  background: -moz-linear-gradient(#f2f2f2, #bebebe);
+  background: linear-gradient(#f2f2f2, #bebebe);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: 1px solid #6a6a6a;
+  text-align: center;
+  height: 55px;
+}
+.numbers-content {
+  padding: 5px;
+  position: absolute;
+  top: 56px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+}
