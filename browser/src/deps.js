@@ -14,6 +14,9 @@ goog.addDependency('../../../../src/fs/fs.js', ['fs'], ['fs.FSError', 'fs.Stats'
 goog.addDependency('../../../../src/fs/fserror.js', ['fs.FSError'], []);
 goog.addDependency('../../../../src/fs/stats.js', ['fs.Stats', 'fs.Stats.Mode'], []);
 goog.addDependency('../../../../src/index.js', ['main'], ['numbers.Numbers']);
-goog.addDependency('../../../../src/numbers/numbers.js', ['numbers.Numbers'], ['goog.ui.Control', 'numbers.NumbersRenderer']);
+goog.addDependency('../../../../src/numbers/model.js', ['numbers.Model'], ['goog.events.EventTarget']);
+goog.addDependency('../../../../src/numbers/numbers.js', ['numbers.Numbers'], ['fs', 'goog.ui.Control', 'numbers.Model', 'numbers.NumbersRenderer', 'numbers.Table']);
 goog.addDependency('../../../../src/numbers/numbers_renderer.js', ['numbers.NumbersRenderer'], ['goog.ui.ControlRenderer']);
+goog.addDependency('../../../../src/numbers/table.js', ['numbers.Table'], ['goog.ui.Control', 'numbers.Model', 'numbers.TableRenderer']);
+goog.addDependency('../../../../src/numbers/table_renderer.js', ['numbers.TableRenderer'], ['goog.ui.ControlRenderer']);
 goog.addDependency('../../../../src/path.js', ['path'], []);

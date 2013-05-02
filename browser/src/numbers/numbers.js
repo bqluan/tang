@@ -2,7 +2,9 @@ goog.provide('numbers.Numbers');
 
 goog.require('fs');
 goog.require('goog.ui.Control');
+goog.require('numbers.Model');
 goog.require('numbers.NumbersRenderer');
+goog.require('numbers.Table');
 
 /**
  * @param {string} filename
@@ -34,10 +36,16 @@ numbers.Numbers.prototype.getFilename = function() {
   return this.filename_;
 };
 
+/**
+ * @override
+ */
 numbers.Numbers.prototype.enterDocument = function() {
   numbers.Numbers.superClass_.enterDocument.call(this);
   var self = this;
   fs.readFile(this.filename_, function(err, data) {
-    self.setContent(data);
+    var model = new numbers.Model(data);
+    var table = new numbers.Table(model);
+    table.setParent(self);
+    table.render(self.renderer_.getContentElement(self.element_));
   });
 };
